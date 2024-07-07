@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine gebuchten Termine</title>
+    <link rel="stylesheet" type="text/css" href="terminuebersicht.css">
+    
+</head>
+
+<body>
+    <header>
+        <h1>Meine gebuchten Termine</h1>
+    </header>
+
+    <div class="appointment-container">
+        <table id="appointment-table">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Uhrzeit</th>
+                    <th>Therapeut</th>
+                    <th>Art des Termins</th>
+                    <th>Beschreibung</th>
+                    <th>Ort</th>
+                    <th>Aktion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamische Termin-Daten werden hier eingefügt -->
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAppointments();
+
+            function renderAppointments() {
+                // Abrufen der Daten aus localStorage
+                const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+                const tbody = document.getElementById('appointment-table').getElementsByTagName('tbody')[0];
+
+                // Alte Inhalte entfernen
+                tbody.innerHTML = '';
+
+                if (appointments.length > 0) {
+                    appointments.forEach(appointment => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${appointment.date}</td>
+                            <td>${appointment.hour}</td>
+                            <td>${appointment.therapistID}</td>
+                            <td>${appointment.therapistType}</td>
+                            <td>${appointment.problemDescription}</td>
+                            <td>${appointment.location}</td>
+                            <td><button class="delete-btn" data-id="${appointment.appointmentID}">Löschen</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Hinzufügen der Event-Listener für die Lösch-Buttons
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const appointmentId = this.getAttribute('data-id');
+                            deleteAppointment(appointmentId);
+                        });
+                    });
+                } else {
+                    console.error('Keine Termine gefunden');
+                }
+            }
+
+            function deleteAppointment(appointmentId) {
+                fetch(`http://localhost:8080/deleteappointment?appointmentID=${appointmentId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Server error: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.StatusCode === "0") {
+                            // Entfernen des Termins aus dem localStorage
+                            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+                            const updatedAppointments = appointments.filter(appointment => appointment.appointmentID !== appointmentId);
+                            localStorage.setItem('appointments', JSON.stringify(updatedAppointments));
+
+                            // Alert anzeigen
+                            alert('Der Termin wurde erfolgreich gelöscht.');
+
+                            // Weiterleiten zur patient-home.html Seite
+                            window.location.href = 'patient-home.html';
+                        } else {
+                            console.error('Fehler beim Löschen des Termins:', data.Nachricht || 'Unbekannter Fehler');
+                        }
+                    })
+                    .catch(error => console.error('Fehler:', error));
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Praxisnachrichten</title>
+    <link rel="stylesheet" type="text/css" href="nachrichtpraxis.css">
+</head>
+
+<body>
+    <header>
+        <h1>Praxisnachrichten</h1>
+    </header>
+    <div class="chat-app">
+        <div class="chat-list">
+            <header>
+                <h3>Chats</h3>
+            </header>
+            <ul id="conversation-list">
+                <!-- Konversationen werden hier angezeigt -->
+            </ul>
+        </div>
+        <div class="chat-container">
+            <header>
+                <h3 id="current-conversation">Nachrichten</h3>
+            </header>
+            <div class="messages" id="message-container">
+                <!-- Nachrichten werden hier angezeigt -->
+            </div>
+            <div class="input-area">
+                <input type="text" id="message-input" placeholder="Nachricht eingeben...">
+                <button id="send-button">Senden</button>
+            </div>
+        </div>
+        <div class="sidebar">
+            <h3 id="sidebar1">Hier können Sie einen Link für eine virtuelle Sitzung schicken : </h3>
+            <button id="zoom-button">Zoom-Link generieren</button>
+        </div>
+        
+    </div>
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userEmail = localStorage.getItem('praxisemail');
+            const conversationList = document.getElementById('conversation-list');
+            const sendButton = document.getElementById('send-button');
+            const zoomButton = document.getElementById('zoom-button');
+            const socket = new WebSocket(`ws://localhost:8080/msgwebsocket?userEmail=${encodeURIComponent(userEmail)}`);
+            let currentPatientEmail = '';
+            let conversations = JSON.parse(localStorage.getItem(`conversations_${userEmail}`)) || {};
+            let messages = JSON.parse(localStorage.getItem(`messages_${userEmail}`)) || {};
+
+            function saveConversations() {
+                localStorage.setItem(`conversations_${userEmail}`, JSON.stringify(conversations));
+            }
+
+            function saveMessages() {
+                localStorage.setItem(`messages_${userEmail}`, JSON.stringify(messages));
+            }
+
+            function displayConversations() {
+                conversationList.innerHTML = '';
+                Object.keys(conversations).forEach(email => {
+                    const li = document.createElement('li');
+                    li.textContent = conversations[email].name;
+                    li.dataset.email = email;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Löschen';
+                    deleteButton.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        deleteConversation(email);
+                    });
+                    li.appendChild(deleteButton);
+
+                    li.addEventListener('click', () => {
+                        currentPatientEmail = email;
+                        localStorage.setItem('currentPatientEmail', email);
+                        if (socket.readyState === WebSocket.OPEN) {
+                            loadMessages(email, userEmail);
+                        }
+                        updateCurrentConversation(conversations[email].name);
+                    });
+                    conversationList.appendChild(li);
+                });
+            }
+
+            function deleteConversation(email) {
+                delete conversations[email];
+                delete messages[email];
+                saveConversations();
+                saveMessages();
+                displayConversations();
+                if (currentPatientEmail === email) {
+                    document.getElementById('message-container').innerHTML = '';
+                    updateCurrentConversation('Nachrichten');
+                    currentPatientEmail = '';
+                }
+            }
+
+            socket.onopen = () => {
+                console.log('WebSocket connected, Session ID:', socket.protocol);
+                Object.keys(conversations).forEach(email => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        loadMessages(email, userEmail);
+                    }
+                });
+            };
+
+            socket.onmessage = (event) => {
+                const messageData = JSON.parse(event.data);
+                if (messageData.msgs) {
+                    const patientEmail = messageData.to === userEmail ? messageData.from : messageData.to;
+                    messages[patientEmail] = messageData.msgs;
+                    saveMessages();
+                    if (patientEmail === currentPatientEmail) {
+                        displayMessages(patientEmail);
+                    }
+                } else {
+                    if (messageData.from !== userEmail) {
+                        addMessage(messageData);
+                    }
+                }
+            };
+
+            socket.onclose = () => {
+                console.log('WebSocket disconnected, Session ID:', socket.protocol);
+            };
+
+            function loadMessages(from, to) {
+                console.log(`Loading messages for conversation from ${from} to ${to}`);
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ from, to, msg: '' }));
+                }
+            }
+
+            function sendMessage() {
+                const input = document.getElementById('message-input');
+                const msg = input.value;
+                if (msg.trim() !== '' && socket.readyState === WebSocket.OPEN && currentPatientEmail) {
+                    const message = { from: userEmail, to: currentPatientEmail, msg, time: new Date().getTime() };
+                    socket.send(JSON.stringify(message));
+                    addMessage(message, true);
+                    input.value = '';
+                } else {
+                    console.error('WebSocket is not open, message is empty, or patient email is not set.');
+                }
+            }
+
+            function generateZoomLink() {
+                const zoomLink = `https://zoom.us/j/${Math.floor(100000000 + Math.random() * 900000000)}`;
+                const message = { from: userEmail, to: currentPatientEmail, msg: `Zoom-Meeting: ${zoomLink}`, time: new Date().getTime() };
+                if (socket.readyState === WebSocket.OPEN && currentPatientEmail) {
+                    socket.send(JSON.stringify(message));
+                    addMessage(message, true);
+                } else {
+                    console.error('WebSocket is not open or patient email is not set.');
+                }
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            zoomButton.addEventListener('click', generateZoomLink);
+
+            function addMessage(message, isSentByUser = false) {
+                const patientEmail = message.to === userEmail ? message.from : message.to;
+                if (!messages[patientEmail]) {
+                    messages[patientEmail] = [];
+                }
+                messages[patientEmail].push(message);
+                saveMessages();
+                if (patientEmail === currentPatientEmail) {
+                    displayMessage(message);
+                }
+                if (!conversations[patientEmail]) {
+                    conversations[patientEmail] = { name: patientEmail };
+                    saveConversations();
+                    displayConversations();
+                }
+                if (isSentByUser) {
+                    socket.onmessage = (event) => {
+                        const messageData = JSON.parse(event.data);
+                        if (messageData.msgs) {
+                            const patientEmail = messageData.to === userEmail ? messageData.from : messageData.to;
+                            messages[patientEmail] = messageData.msgs;
+                            saveMessages();
+                            if (patientEmail === currentPatientEmail) {
+                                displayMessages(patientEmail);
+                            }
+                        } else if (messageData.from !== userEmail) {
+                            addMessage(messageData);
+                        }
+                    };
+                }
+            }
+
+            function displayMessages(email) {
+                const container = document.getElementById('message-container');
+                container.innerHTML = '';
+                if (messages[email]) {
+                    messages[email].slice().reverse().forEach(displayMessage);
+                }
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function displayMessage(message) {
+                const container = document.getElementById('message-container');
+                const msgDiv = document.createElement('div');
+                msgDiv.className = message.from === userEmail ? 'therapist' : 'patient';
+                const messageTime = new Date(message.time).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                const messageDate = new Date(message.time).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                msgDiv.innerHTML = `<p>${message.msg}</p><p class="timestamp">${messageDate} ${messageTime}</p>`;
+                container.appendChild(msgDiv);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function updateCurrentConversation(patientName) {
+                const conversationHeader = document.getElementById('current-conversation');
+                conversationHeader.textContent = `Nachrichten - ${patientName}`;
+            }
+
+            window.addEventListener('beforeunload', () => {
+                socket.close();
+            });
+
+            displayConversations();
+
+            const lastConversationEmail = localStorage.getItem('currentPatientEmail');
+            if (lastConversationEmail) {
+                currentPatientEmail = lastConversationEmail;
+                if (conversations[currentPatientEmail]) {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        loadMessages(lastConversationEmail, userEmail);
+                    }
+                    updateCurrentConversation(conversations[currentPatientEmail]?.name || 'Unbekannt');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

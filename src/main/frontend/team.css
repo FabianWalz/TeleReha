@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.patient-header {
+    background-color: #00AEEF;
+    /* Hellblau als Primärfarbe */
+    color: white;
+    text-align: center;
+    /* Zentriert */
+    padding: 1em;
+    /* Innenabstand */
+}
+
+.patient-header h1 {
+    margin: 0;
+}
+
+/* Container für das Bild zentrieren */
+.image-container {
+    flex: 1;
+    /* Ensures this container takes up all available space */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    /* Abstand vom oberen Rand */
+}
+
+/* CSS für das Bild */
+img {
+    width: 60%;
+    /* Breite auf 60% setzen */
+    max-height: 500px;
+    /* Maximalhöhe auf 500px begrenzen */
+    object-fit: cover;
+    /* Das Bild so zuschneiden, dass es den verfügbaren Platz optimal ausfüllt */
+}
+
+footer {
+    text-align: center;
+    padding: 5px;
+    background-color: #00AEEF;
+    /* Hellblau wie die Überschrift */
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    /* Ensures the footer is pushed to the bottom */
+}

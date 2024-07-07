@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Übungen</title>
+    <link rel="stylesheet" type="text/css" href="uebungen.css">
+</head>
+
+<body>
+    <header>
+        <h1>Übungen</h1>
+        <p>Wählen Sie eine Kategorie aus, um passende Übungen anzuzeigen:</p>
+        <select id="problem-select">
+            <option value="" disabled selected>Bitte wählen Sie aus...</option>
+            <option value="Nackenschmerzen">Nackenschmerzen</option>
+            <option value="Rückenschmerzen">Rückenschmerzen</option>
+            <option value="Knieprobleme">Knieprobleme</option>
+            <option value="Schulterprobleme">Schulterprobleme</option>
+            <option value="Handgelenksprobleme">Handgelenksprobleme</option>
+            <option value="Hüftprobleme">Hüftprobleme</option>
+            <option value="Fußprobleme">Fuß- und Knöchelprobleme</option>
+            <option value="Handprobleme">Hand- und Fingerprobleme</option>
+            <option value="Haltung">Haltung verbessern</option>
+            <option value="Beinprobleme">Beinprobleme</option>
+            <option value="Ganzkörperkräftigung">Ganzkörperkräftigung</option>
+            <option value="Cardio">Cardio-Übungen</option>
+            <option value="Gleichgewicht">Gleichgewichtsübungen</option>
+        </select>
+        <button onclick="searchExercises()">Suchen</button>
+    </header>
+
+    <div id="exercise-list">
+        <!-- Hier werden die Übungen angezeigt -->
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+    <script>
+        function searchExercises() {
+            var problemSelect = document.getElementById("problem-select");
+            var selectedProblem = problemSelect.value;
+            var exerciseList = document.getElementById("exercise-list");
+
+            var exercises = getExercisesForProblem(selectedProblem);
+            if (exercises.length > 0) {
+                exerciseList.innerHTML = "<h2>Übungen für " + selectedProblem + ":</h2>";
+                exercises.forEach(function (exercise) {
+                    exerciseList.innerHTML += "<div class='exercise'><h3>" + exercise.name + "</h3><div class='video-container'><iframe src='" + exercise.videoUrl + "' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe></div></div>";
+                });
+            } else {
+                exerciseList.innerHTML = "<p>Es gibt keine Übungen für " + selectedProblem + ".</p>";
+            }
+        }
+
+        function getExercisesForProblem(problem) {
+            if (problem === "Nackenschmerzen") {
+                return [
+                    { name: "Nackendehnung", videoUrl: "https://www.youtube.com/embed/GvTuB4ucUEk?si=ED23JoJ1R-aTbAj4" },
+                    { name: "Schulterkreisen", videoUrl: "https://www.youtube.com/embed/tL88WL5DLBc?si=WUHDV76K9XjbCsW0" },
+                    { name: "Nackenrotation", videoUrl: "https://www.youtube.com/embed/t4evKckOdJ8?si=P0nqUbWWnWYgZeMQ" }
+                ];
+            } else if (problem === "Rückenschmerzen") {
+                return [
+                    { name: "Katzen-Kuh-Übung", videoUrl: "videos/katzenkuhuebung.mp4" },
+                    { name: "Beckenkippen", videoUrl: "videos/beckenkippen.mp4" },
+                    { name: "Lendenwirbelsäulenstreckung", videoUrl: "videos/lendenwirbelsaeulenstreckung.mp4" }
+                ];
+            } else if (problem === "Knieprobleme") {
+                return [
+                    { name: "Kniebeugen", videoUrl: "videos/kniebeugen.mp4" },
+                    { name: "Kniestreckung", videoUrl: "videos/kniestreckung.mp4" },
+                    { name: "Kniebeugen an der Wand", videoUrl: "videos/kniebeugenanwand.mp4" }
+                ];
+            } else if (problem === "Schulterprobleme") {
+                return [
+                    { name: "Schulterkreisen", videoUrl: "https://www.youtube.com/embed/tL88WL5DLBc?si=WUHDV76K9XjbCsW0" },
+                    { name: "Wandengel", videoUrl: "videos/wandengel.mp4" }
+                ];
+            } else if (problem === "Handgelenksprobleme") {
+                return [
+                    { name: "Handgelenksdehnungen", videoUrl: "videos/handgelenksdehnungen.mp4" },
+                    { name: "Handgelenkskreisen", videoUrl: "videos/handgelenkskreisen.mp4" }
+                ];
+            } else if (problem === "Hüftprobleme") {
+                return [
+                    { name: "Hüftbeuger-Dehnung", videoUrl: "videos/hueftbeuger-dehnung.mp4" },
+                    { name: "Brücke", videoUrl: "videos/bruecke.mp4" }
+                ];
+            } else if (problem === "Fußprobleme") {
+                return [
+                    { name: "Zehenheben", videoUrl: "videos/zehenheben.mp4" },
+                    { name: "Knöchelkreisen", videoUrl: "videos/knoechelkreisen.mp4" }
+                ];
+            } else if (problem === "Handprobleme") {
+                return [
+                    { name: "Fingerstrecken", videoUrl: "videos/fingerstrecken.mp4" },
+                    { name: "Greifübungen", videoUrl: "videos/greifuebungen.mp4" }
+                ];
+            } else if (problem === "Haltung") {
+                return [
+                    { name: "Brustdehnungen", videoUrl: "videos/brustdehnungen.mp4" },
+                    { name: "Plank", videoUrl: "videos/plank.mp4" }
+                ];
+            } else if (problem === "Beinprobleme") {
+                return [
+                    { name: "Wadenheben", videoUrl: "videos/wadenheben.mp4" },
+                    { name: "Quadrizepsdehnung", videoUrl: "videos/quadrizepsdehnung.mp4" }
+                ];
+            } else if (problem === "Ganzkörperkräftigung") {
+                return [
+                    { name: "Burpees", videoUrl: "videos/burpees.mp4" },
+                    { name: "Ausfallschritte", videoUrl: "videos/ausfallschritte.mp4" }
+                ];
+            } else if (problem === "Cardio") {
+                return [
+                    { name: "Seilspringen", videoUrl: "videos/seilspringen.mp4" },
+                    { name: "Hampelmann", videoUrl: "videos/hampelmann.mp4" }
+                ];
+            } else if (problem === "Gleichgewicht") {
+                return [
+                    { name: "Einbeinstand", videoUrl: "videos/einbeinstand.mp4" },
+                    { name: "Tandemstand", videoUrl: "videos/tandemstand.mp4" }
+                ];
+            } else {
+                return [];
+            }
+        }
+    </script>
+</body>
+
+</html>

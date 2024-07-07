@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Terminbuchung</title>
+    <link rel="stylesheet" type="text/css" href="terminbuchung1.css">
+</head>
+
+<body>
+    <form action="#" id="dienstleistung-form" method="POST" accept-charset="UTF-8" enctype="multipart/form-data">
+        <h2>Terminbuchung</h2>
+        <fieldset>
+            <label>Standort</label>
+            <select name="Standort" id="Standort" required>
+                <option value="">Bitte auswählen</option>
+                <option value="Königstraße 70, 70173 Stuttgart">Königstraße 70, 70173 Stuttgart</option>
+                <option value="Schwabstr. 93, 70193 Stuttgart">Schwabstr. 93, 70193 Stuttgart</option>
+                <option value="Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen">Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen</option>
+                <option value="Ludwigsburger Str. 191, 70435 Stuttgart">Ludwigsburger Str. 191, 70435 Stuttgart</option>
+                <option value="Am Höhenpark 4, 70192 Stuttgart">Am Höhenpark 4, 70192 Stuttgart</option>
+                <option value="Marienplatz 4, 70178 Stuttgart">Marienplatz 4, 70178 Stuttgart</option>
+                <option value="Möhringer Landstraße 5, 70563 Stuttgart">Möhringer Landstraße 5, 70563 Stuttgart</option>
+            </select>
+            <label>Art des Termins</label>
+            <select name="Terminart" id="Terminart" required>
+                <option value="">Bitte auswählen</option>
+                <option value="Praxisbesuch">Praxisbesuch</option>
+                <option value="Hausbesuch">Hausbesuch</option>
+                <option value="Videoanruf">Videoanruf</option>
+            </select>
+            <label>Leistung</label>
+            <select name="Leistung" id="Leistung" required>
+                <option value="">Bitte auswählen</option>
+                <option value="BackCheck" data-duration="20">BackCheck (20 Min)</option>
+                <option value="Manuelle Therapie" data-duration="20">Manuelle Therapie (20 Min)</option>
+                <option value="Krankengymnastik" data-duration="40">Krankengymnastik (40 Min)</option>
+                <option value="Krankengymnastik-Geräte" data-duration="20">Krankengymnastik-Geräte (40 Min)</option>
+                <option value="Taping/Kinesiologie" data-duration="20">Taping/Kinesiologie (20 Min)</option>
+                <option value="Wärmetherapie" data-duration="20">Wärmetherapie (20 Min)</option>
+                <option value="Lymphdrainage 30" data-duration="30">Lymphdrainage (30 Min)</option>
+                <option value="Lymphdrainage 45" data-duration="45">Lymphdrainage (45 Min)</option>
+                <option value="Lymphdrainage 60" data-duration="60">Lymphdrainage (60 Min)</option>
+                <option value="Massage" data-duration="20">Massage (20 Min)</option>
+                <option value="Sportphysiotherapie" data-duration="20">Sportphysiotherapie (20 Min)</option>
+            </select>
+            <label>Therapeut</label>
+            <select name="Therapeut" id="Therapeut" required>
+                <option value="">Bitte zuerst Standort und Leistung auswählen</option>
+            </select>
+            <p class="section-spacing">Haben Sie ein Rezept?</p>
+            <div class="radio-group">
+                <input type="radio" id="rezept-ja" name="Rezept" value="Ja">
+                <label for="rezept-ja">Ja</label>
+                <input type="radio" id="rezept-nein" name="Rezept" value="Nein" checked>
+                <label for="rezept-nein">Nein</label>
+            </div>
+            <div id="rezept-upload" class="hidden">
+                <label>Rezept hochladen (PDF):
+                    <input type="file" name="RezeptUpload" id="RezeptUpload" accept=".pdf">
+                </label>
+            </div>
+        </fieldset>
+        <div class="btns">
+            <input type="submit" value="Weiter">
+        </div>
+    </form>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        const therapists = {
+            "Königstraße 70, 70173 Stuttgart": ["Anna Müller", "Jonas Schmidt", "Lisa Becker", "Tobias Schmitt", "Mia Schwarz", "Julian Neumann"],
+            "Schwabstr. 93, 70193 Stuttgart": ["Carla Hofmann", "Jan Berger", "Lea Arnold", "Tom Wagner", "Mona Braun", "Eric Albrecht"],
+            "Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen": ["Nina Schmid", "Oliver Graf", "Lilly Sauer", "Florian Peters", "Nele Horn", "Robin Friedrich"],
+            "Ludwigsburger Str. 191, 70435 Stuttgart": ["Lena Hoffmann", "David Kuhn", "Anna Frank", "Johanna Engel", "Jakob Bach", "Sophia Weiß"],
+            "Am Höhenpark 4, 70192 Stuttgart": ["Maximilian Werner", "Theresa Neumann", "Leon Möller", "Fabian Lang", "Katharina Busch", "Noah Becker"],
+            "Marienplatz 4, 70178 Stuttgart": ["Marie Hartmann", "Paul Weber", "Sarah Bauer", "Lara Schäfer", "Simon Vogel", "Clara Lehmann"],
+            "Möhringer Landstraße 5, 70563 Stuttgart": ["Elisa Lang", "Lukas Voigt", "Tobias Horn", "Hannah Schmitt", "Niklas Krause", "Lisa Winter"]
+        };
+
+        document.getElementById('Standort').addEventListener('change', updateTherapists);
+        document.getElementById('Leistung').addEventListener('change', updateTherapists);
+
+        function updateTherapists() {
+            const standort = document.getElementById('Standort').value;
+            const therapeutSelect = document.getElementById('Therapeut');
+
+            therapeutSelect.innerHTML = '<option value="">Bitte auswählen</option>';
+
+            if (therapists[standort]) {
+                const availableTherapists = therapists[standort];
+                availableTherapists.forEach(therapeut => {
+                    const option = document.createElement('option');
+                    option.value = therapeut;
+                    option.textContent = therapeut;
+                    therapeutSelect.appendChild(option);
+                });
+            }
+        }
+
+        document.getElementById('dienstleistung-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var standort = document.getElementById('Standort').value;
+            var terminart = document.getElementById('Terminart').value;
+            var leistung = document.getElementById('Leistung').value;
+            var therapeut = document.getElementById('Therapeut').value;
+            var duration = document.getElementById('Leistung').selectedOptions[0].getAttribute('data-duration');
+
+            if (!standort || !terminart || !leistung || !therapeut) {
+                alert('Bitte füllen Sie alle Felder aus.');
+                return;
+            }
+
+            var redirectUrl = "terminbuchung2.html";
+
+            if (document.getElementById('rezept-ja').checked) {
+                uploadFile(function() {
+                    window.location.href = redirectUrl + '?Standort=' + encodeURIComponent(standort) + '&Terminart=' + encodeURIComponent(terminart) + '&Leistung=' + encodeURIComponent(leistung) + '&Therapeut=' + encodeURIComponent(therapeut) + '&Dauer=' + encodeURIComponent(duration);
+                });
+            } else {
+                window.location.href = redirectUrl + '?Standort=' + encodeURIComponent(standort) + '&Terminart=' + encodeURIComponent(terminart) + '&Leistung=' + encodeURIComponent(leistung) + '&Therapeut=' + encodeURIComponent(therapeut) + '&Dauer=' + encodeURIComponent(duration);
+            }
+        });
+
+        document.querySelectorAll('input[name="Rezept"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                var rezeptUpload = document.getElementById('rezept-upload');
+                if (document.getElementById('rezept-ja').checked) {
+                    rezeptUpload.classList.remove('hidden');
+                } else {
+                    rezeptUpload.classList.add('hidden');
+                }
+            });
+        });
+
+        function uploadFile(callback) {
+    var formData = new FormData();
+    var fileInput = document.getElementById('RezeptUpload');
+    var file = fileInput.files[0];
+    formData.append("file", file);
+    const userId = localStorage.getItem('email');
+        
+
+    fetch(`http://localhost:8080/uploadRecipe?email=${userId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        callback();
+    })
+    .catch(error => {
+        console.error('Error uploading file:', error);
+        alert('Fehler beim Hochladen der Datei. Bitte versuchen Sie es erneut.');
+    });
+}
+
+    </script>
+</body>
+
+</html>

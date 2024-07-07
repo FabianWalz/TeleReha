@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine Rezepte - TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="rezepte.css">
+</head>
+
+<body>
+    <header>
+        <h1>Meine Rezepte</h1>
+    </header>
+    <div class="main-container">
+        <p class="instruction-text">Hier können Sie Ihre Rezepte herunterladen:</p>
+        <div class="button-container">
+            <button id="rezept" class="large-button">Rezepte herunterladen</button>
+        </div>
+        <div id="pdf-container" style="margin-top: 20px;">
+            <iframe id="pdf-frame" width="100%" height="500px" style="border: none;"></iframe>
+        </div>
+    </div>
+   
+
+    <script>
+        const userId = localStorage.getItem('email');
+
+        document.getElementById('rezept').addEventListener('click', function() {
+            downloadAndDisplayRecipes();
+        });
+
+        function downloadAndDisplayRecipes() {
+            fetch(`http://localhost:8080/downloadRecipe?userId=${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    document.getElementById('pdf-frame').src = url;
+                })
+                .catch(error => console.error('Fehler beim Herunterladen des Rezepts:', error));
+        }
+    </script>
+</body>
+
+</html>

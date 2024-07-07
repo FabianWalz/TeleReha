@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Terminkalender</title>
+    <link rel="stylesheet" type="text/css" href="praxis-calendar.css">
+</head>
+
+<body>
+    <header>
+        <h1>Terminkalender</h1>
+    </header>
+
+    <div class="container">
+        <div class="calendar-nav">
+            <button onclick="changeWeek(-1)">Vorherige Woche</button>
+            <span class="week-label" id="week-label"></span>
+            <button onclick="changeWeek(1)">Nächste Woche</button>
+            <button class="messages-button" onclick="window.location.href='nachricht-praxis.html?practiceEmail=' + encodeURIComponent(localStorage.getItem('email')) + '&patientEmail=' + encodeURIComponent('s@gmail.com')">Nachrichten</button>
+        </div>
+
+        <div class="week-selector">
+            <div class="date-picker">
+                <label for="week-start">Tag auswählen:</label>
+                <input type="date" id="week-start" onchange="handleDateChange(event)" pattern="\d{2}.\d{2}.\d{4}">
+            </div>
+        </div>
+
+        <div id="date-headers" class="weekdays">
+            <!-- Dynamische Datumsüberschriften werden hier hinzugefügt -->
+        </div>
+
+        <div class="weekdays">
+            <div class="weekday" id="monday" onclick="selectDay(0)">Montag</div>
+            <div class="weekday" id="tuesday" onclick="selectDay(1)">Dienstag</div>
+            <div class="weekday" id="wednesday" onclick="selectDay(2)">Mittwoch</div>
+            <div class="weekday" id="thursday" onclick="selectDay(3)">Donnerstag</div>
+            <div class="weekday" id="friday" onclick="selectDay(4)">Freitag</div>
+        </div>
+
+        <table>
+            <thead>
+                <tr id="therapist-headers">
+                    <th>Zeit</th>
+                    <th id="therapist-header-0" onclick="editTherapist(0)">Therapeut 1</th>
+                    <th id="therapist-header-1" onclick="editTherapist(1)">Therapeut 2</th>
+                    <th id="therapist-header-2" onclick="editTherapist(2)">Therapeut 3</th>
+                    <th id="therapist-header-3" onclick="editTherapist(3)">Therapeut 4</th>
+                    <th id="add-therapist" onclick="openAddTherapistForm()">+</th>
+                </tr>
+            </thead>
+            <tbody id="calendar-body">
+                <!-- Dynamische Zeilen werden hier hinzugefügt -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-popup" id="appointmentForm">
+        <h2>Termin anlegen</h2>
+        <label for="patient-name">Name des Patienten:</label>
+        <input type="text" id="patient-name" required>
+
+        <label for="treatment-type">Art der Behandlung:</label>
+        <select id="treatment-type" required>
+            <option value="">Bitte auswählen</option>
+        </select>
+
+        <label for="appointment-type">Art des Termins:</label>
+        <select id="appointment-type" required>
+            <option value="Praxisbesuch">Praxisbesuch</option>
+            <option value="Videoanruf">Videoanruf</option>
+            <option value="Hausbesuch">Hausbesuch</option>
+        </select>
+
+        <div class="form-buttons">
+            <button onclick="saveAppointment()">Speichern</button>
+            <button class="delete-btn" onclick="deleteAppointment()">Löschen</button>
+            <button class="close-btn" onclick="closeForm()">Schließen</button>
+        </div>
+    </div>
+
+    <div class="therapist-popup" id="therapistForm">
+        <h2>Therapeut bearbeiten</h2>
+        <label for="therapist-name">Name des Therapeuten:</label>
+        <input type="text" id="therapist-name" required>
+
+        <label for="therapist-treatments">Leistungen:</label>
+        <div id="therapist-treatments">
+            <input type="checkbox" id="BackCheck" value="BackCheck">
+            <label for="BackCheck">BackCheck (20 Min)</label>
+            <input type="checkbox" id="Manuelle Therapie" value="Manuelle Therapie">
+            <label for="Manuelle Therapie">Manuelle Therapie (20 Min)</label>
+            <input type="checkbox" id="Krankengymnastik" value="Krankengymnastik">
+            <label for="Krankengymnastik">Krankengymnastik (40 Min)</label>
+            <input type="checkbox" id="Krankengymnastik-Geräte" value="Krankengymnastik-Geräte">
+            <label for="Krankengymnastik-Geräte">Krankengymnastik-Geräte (40 Min)</label>
+            <input type="checkbox" id="Taping/Kinesiologie" value="Taping/Kinesiologie">
+            <label for="Taping/Kinesiologie">Taping/Kinesiologie (20 Min)</label>
+            <input type="checkbox" id="Wärmetherapie" value="Wärmetherapie">
+            <label for="Wärmetherapie">Wärmetherapie (20 Min)</label>
+            <input type="checkbox" id="Lymphdrainage 30" value="Lymphdrainage 30">
+            <label for="Lymphdrainage 30">Lymphdrainage (30 Min)</label>
+            <input type="checkbox" id="Lymphdrainage 45" value="Lymphdrainage 45">
+            <label for="Lymphdrainage 45">Lymphdrainage (45 Min)</label>
+            <input type="checkbox" id="Lymphdrainage 60" value="Lymphdrainage 60">
+            <label for="Lymphdrainage 60">Lymphdrainage (60 Min)</label>
+            <input type="checkbox" id="Massage" value="Massage">
+            <label for="Massage">Massage (20 Min)</label>
+            <input type="checkbox" id="Sportphysiotherapie" value="Sportphysiotherapie">
+            <label for="Sportphysiotherapie">Sportphysiotherapie (20 Min)</label>
+        </div>
+        <div class="form-buttons">
+            <button onclick="saveTherapist()">Speichern</button>
+            <button class="delete-btn" onclick="deleteTherapist()">Löschen</button>
+            <button class="close-btn" onclick="closeTherapistForm()">Schließen</button>
+        </div>
+    </div>
+
+    <div class="therapist-popup" id="addTherapistForm">
+        <h2>Neuen Therapeuten hinzufügen</h2>
+        <label for="new-therapist-name">Name des Therapeuten:</label>
+        <input type="text" id="new-therapist-name" required>
+
+        <label for="new-therapist-treatments">Leistungen:</label>
+        <div id="new-therapist-treatments">
+            <input type="checkbox" id="new-BackCheck" value="BackCheck">
+            <label for="new-BackCheck">BackCheck (20 Min)</label>
+            <input type="checkbox" id="new-Manuelle Therapie" value="Manuelle Therapie">
+            <label for="new-Manuelle Therapie">Manuelle Therapie (20 Min)</label>
+            <input type="checkbox" id="new-Krankengymnastik" value="Krankengymnastik">
+            <label for="new-Krankengymnastik">Krankengymnastik (40 Min)</label>
+            <input type="checkbox" id="new-Krankengymnastik-Geräte" value="Krankengymnastik-Geräte">
+            <label for="new-Krankengymnastik-Geräte">Krankengymnastik-Geräte (40 Min)</label>
+            <input type="checkbox" id="new-Taping/Kinesiologie" value="Taping/Kinesiologie">
+            <label for="new-Taping/Kinesiologie">Taping/Kinesiologie (20 Min)</label>
+            <input type="checkbox" id="new-Wärmetherapie" value="Wärmetherapie">
+            <label for="new-Wärmetherapie">Wärmetherapie (20 Min)</label>
+            <input type="checkbox" id="new-Lymphdrainage 30" value="Lymphdrainage 30">
+            <label for="new-Lymphdrainage 30">Lymphdrainage (30 Min)</label>
+            <input type="checkbox" id="new-Lymphdrainage 45" value="Lymphdrainage 45">
+            <label for="new-Lymphdrainage 45">Lymphdrainage (45 Min)</label>
+            <input type="checkbox" id="new-Lymphdrainage 60" value="Lymphdrainage 60">
+            <label for="new-Lymphdrainage 60">Lymphdrainage (60 Min)</label>
+            <input type="checkbox" id="new-Massage" value="Massage">
+            <label for="new-Massage">Massage (20 Min)</label>
+            <input type="checkbox" id="new-Sportphysiotherapie" value="Sportphysiotherapie">
+            <label for="new-Sportphysiotherapie">Sportphysiotherapie (20 Min)</label>
+        </div>
+        <div class="form-buttons">
+            <button onclick="saveNewTherapist()">Speichern</button>
+            <button class="close-btn" onclick="closeAddTherapistForm()">Schließen</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        const calendarBody = document.getElementById('calendar-body');
+        const appointmentForm = document.getElementById('appointmentForm');
+        const therapistForm = document.getElementById('therapistForm');
+        const addTherapistForm = document.getElementById('addTherapistForm');
+        const weekLabel = document.getElementById('week-label');
+        let currentCell = null;
+        let currentStartTime = null;
+        let selectedWeekStart = new Date();
+        let currentTherapistIndex = null;
+        let selectedDayIndex = null;
+        let therapists = [];
+        let therapistTreatments = {}; // Key: therapistIndex, Value: Array of treatments
+        selectedWeekStart.setDate(selectedWeekStart.getDate() - selectedWeekStart.getDay() + 1); // Set to Monday of the current week
+    
+        const treatments = [
+            { id: 'BackCheck', name: 'BackCheck (20 Min)', duration: 20 },
+            { id: 'Manuelle Therapie', name: 'Manuelle Therapie (20 Min)', duration: 20 },
+            { id: 'Krankengymnastik', name: 'Krankengymnastik (40 Min)', duration: 40 },
+            { id: 'Krankengymnastik-Geräte', name: 'Krankengymnastik-Geräte (40 Min)', duration: 40 },
+            { id: 'Taping/Kinesiologie', name: 'Taping/Kinesiologie (20 Min)', duration: 20 },
+            { id: 'Wärmetherapie', name: 'Wärmetherapie (20 Min)', duration: 20 },
+            { id: 'Lymphdrainage 30', name: 'Lymphdrainage (30 Min)', duration: 30 },
+            { id: 'Lymphdrainage 45', name: 'Lymphdrainage (45 Min)', duration: 45 },
+            { id: 'Lymphdrainage 60', name: 'Lymphdrainage (60 Min)', duration: 60 },
+            { id: 'Massage', name: 'Massage (20 Min)', duration: 20 },
+            { id: 'Sportphysiotherapie', name: 'Sportphysiotherapie (20 Min)', duration: 20 }
+        ];
+    
+        const openingHours = {
+            'koenigstrasse': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'schwabstrasse': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'ludwigsburger1': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'ludwigsburger2': { 'Mon-Thu': [420, 1200], 'Fri': [420, 1080] },
+            'hoehenpark': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'marienplatz': { 'Mon-Thu': [480, 1200], 'Fri': [480, 840] },
+            'moehringer': {
+                'Mon': [420, 1200],
+                'Tue': [480, 1200],
+                'Wed': [420, 1200],
+                'Thu': [480, 1200],
+                'Fri': [420, 780]
+            }
+        };
+    
+        function getOpeningHours(day, location) {
+            if (location === 'moehringer') {
+                switch (day) {
+                    case 1: return openingHours[location]['Mon'];
+                    case 2: return openingHours[location]['Tue'];
+                    case 3: return openingHours[location]['Wed'];
+                    case 4: return openingHours[location]['Thu'];
+                    case 5: return openingHours[location]['Fri'];
+                    default: return [420, 1200]; // Default
+                }
+            } else {
+                switch (day) {
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4: return openingHours[location]['Mon-Thu'];
+                    case 5: return openingHours[location]['Fri'];
+                    default: return [420, 1200]; // Default
+                }
+            }
+        }
+    
+        function formatDate(date) {
+            return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
+        }
+    
+        function updateWeekLabel() {
+            const endOfWeek = new Date(selectedWeekStart);
+            endOfWeek.setDate(selectedWeekStart.getDate() + 4); // End of the week (Friday)
+            weekLabel.textContent = `Woche von ${selectedWeekStart.toLocaleDateString('de-DE')} bis ${endOfWeek.toLocaleDateString('de-DE')}`;
+        }
+    
+        function updateDateHeaders() {
+            const dateHeaders = document.getElementById('date-headers');
+            dateHeaders.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(selectedWeekStart);
+                date.setDate(date.getDate() + i);
+                const div = document.createElement('div');
+                div.className = 'date-header';
+                div.textContent = date.toLocaleDateString('de-DE');
+                div.onclick = () => selectDay(i);
+                dateHeaders.appendChild(div);
+            }
+        }
+    
+        function changeWeek(offset) {
+            selectedWeekStart.setDate(selectedWeekStart.getDate() + offset * 7);
+            createCalendar(getLocationFromUrl());
+        }
+    
+        function goToCurrentWeek() {
+            selectedWeekStart = new Date();
+            selectedWeekStart.setDate(selectedWeekStart.getDate() - selectedWeekStart.getDay() + 1); // Set to Monday of the current week
+            createCalendar(getLocationFromUrl());
+        }
+    
+        function goToWeek(dateString) {
+            const date = new Date(dateString);
+            selectedWeekStart = new Date(date.setDate(date.getDate() - date.getDay() + 1)); // Set to Monday of the selected week
+            createCalendar(getLocationFromUrl());
+            highlightSelectedDay(date.getDay() - 1); // Correcting to match the index
+        }
+    
+        // Highlight the selected day
+        function highlightSelectedDay(dayIndex) {
+            const dayHeaders = document.querySelectorAll('.weekday');
+            const dateHeaders = document.querySelectorAll('.date-header');
+            dayHeaders.forEach((header, index) => {
+                header.classList.toggle('selected-day', index === dayIndex);
+            });
+            dateHeaders.forEach((header, index) => {
+                header.classList.toggle('selected-date', index === dayIndex);
+            });
+        }
+    
+        // Generiere Zeit-Slots
+        const slotDuration = 20; // 20 Minuten
+    
+        function createCalendar(location) {
+            updateWeekLabel();
+            updateDateHeaders();
+            calendarBody.innerHTML = '';
+            const today = new Date();
+            const todayDate = formatDate(today);
+    
+            const therapists = Array.from(document.querySelectorAll('#therapist-headers th'))
+                .slice(1, -1) // Skip the first header (time column) and last (add therapist)
+                .map(th => th.textContent);
+    
+            const openingHoursForDay = getOpeningHours(selectedDayIndex + 1, location);
+    
+            for (let time = openingHoursForDay[0]; time <= openingHoursForDay[1] - slotDuration; time += slotDuration) { // Adjusted loop to ensure the last slot is 20 minutes before closing
+                const row = document.createElement('tr');
+                const timeCell = document.createElement('td');
+                const timeString = `${String(Math.floor(time / 60)).padStart(2, '0')}:${String(time % 60).padStart(2, '0')}`;
+                timeCell.textContent = timeString;
+                row.appendChild(timeCell);
+    
+                for (let therapistIndex = 0; therapistIndex < therapists.length; therapistIndex++) {
+                    const cell = document.createElement('td');
+                    cell.style.width = `${100 / therapists.length}%`;
+                    const cellDate = new Date(selectedWeekStart);
+                    cellDate.setDate(cellDate.getDate() + selectedDayIndex);
+                    const cellDateString = formatDate(cellDate);
+    
+                    cell.classList.remove('today'); // Ensure other cells are not marked as today
+    
+                    if (cellDateString === todayDate) {
+                        cell.classList.add('today'); // Mark the current date cell as today
+                    }
+    
+                    cell.addEventListener('click', () => openForm(cell, time, therapistIndex));
+                    row.appendChild(cell);
+                }
+    
+                calendarBody.appendChild(row);
+            }
+    
+            // Markiere den aktuellen Wochentag
+            const todayIndex = today.getDay() - 1; // Sonntag = 0, Montag = 1, etc.
+            const dateHeaders = document.querySelectorAll('.date-header');
+            dateHeaders.forEach((header, index) => {
+                if (index === todayIndex) {
+                    header.classList.add('today');
+                } else {
+                    header.classList.remove('today');
+                }
+            });
+            const dayHeaders = document.querySelectorAll('.weekday');
+            dayHeaders.forEach((header, index) => {
+                if (index === todayIndex) {
+                    header.classList.add('today');
+                } else {
+                    header.classList.remove('today');
+                }
+                header.addEventListener('click', () => selectDay(index)); // Hinzufügen des Event-Listeners
+            });
+        }
+    
+        function selectDay(dayIndex) {
+            selectedDayIndex = dayIndex;
+            const location = getLocationFromUrl(); // Funktion, um den Standort aus der URL zu holen
+            createCalendar(location); // Aktualisieren Sie den Kalender, um die Zeitslots für den ausgewählten Tag und Standort anzuzeigen
+            highlightSelectedDay(dayIndex);
+        }
+    
+        function openForm(cell, startTime, therapistIndex) {
+            if (selectedDayIndex === null) {
+                alert('Bitte zuerst einen Wochentag auswählen.');
+                return;
+            }
+            currentCell = cell;
+            currentStartTime = startTime;
+            const treatmentSelect = document.getElementById('treatment-type');
+            treatmentSelect.innerHTML = ''; // Clear existing options
+    
+            const treatmentsForTherapist = therapistTreatments[therapistIndex] || [];
+            treatmentsForTherapist.forEach(treatmentId => {
+                const treatment = treatments.find(t => t.id === treatmentId);
+                if (treatment) {
+                    const option = document.createElement('option');
+                    option.value = treatment.id;
+                    option.textContent = treatment.name;
+                    option.setAttribute('data-duration', treatment.duration);
+                    treatmentSelect.appendChild(option);
+                }
+            });
+    
+            if (treatmentsForTherapist.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Keine verfügbaren Leistungen';
+                treatmentSelect.appendChild(option);
+            }
+    
+            appointmentForm.style.display = 'block';
+        }
+    
+        function closeForm() {
+            appointmentForm.style.display = 'none';
+            document.getElementById('patient-name').value = '';
+            document.getElementById('treatment-type').value = '';
+            document.getElementById('appointment-type').value = 'Praxisbesuch'; // Reset appointment type
+        }
+    
+         function saveAppointment() {
+            const patientName = document.getElementById('patient-name').value;
+            const treatmentSelect = document.getElementById('treatment-type');
+            const treatmentType = treatmentSelect.value;
+            const appointmentType = document.getElementById('appointment-type').value;
+            const duration = parseInt(treatmentSelect.selectedOptions[0].getAttribute('data-duration'));
+    
+            if (patientName && treatmentType && currentCell) {
+                let slotsToBook = 1; // Standard ist 1 Slot
+    
+                // Bestimme die Anzahl der Slots basierend auf der Dauer
+                if (duration > 20 && duration <= 40) {
+                    slotsToBook = 2;
+                } else if (duration > 40 && duration <= 60) {
+                    slotsToBook = 3;
+                }
+    
+                // Setze die rowspan-Eigenschaft für die aktuelle Zelle
+                currentCell.rowSpan = slotsToBook;
+                currentCell.innerHTML = `<strong>${patientName}</strong><br>${treatmentType}<br>${appointmentType}`;
+                currentCell.classList.add('booked');
+                currentCell.style.verticalAlign = 'middle'; // Vertikal zentrieren
+    
+                let currentSlot = currentCell;
+                for (let i = 1; i < slotsToBook; i++) {
+                    const nextRow = currentSlot.parentElement.nextElementSibling;
+                    if (nextRow) {
+                        const nextCell = nextRow.children[currentSlot.cellIndex];
+                        nextCell.style.display = 'none'; // Verstecke die nächsten Zellen
+                        currentSlot = nextCell;
+                    } else {
+                        break;
+                    }
+                }
+    
+                // Fetch call
+                const therapistID = localStorage.getItem('email'); 
+                const therapistType = treatmentType;
+                const patientId = localStorage.getItem('email'); 
+                const confirmRequestType = 'Online'; 
+                const problemDescription = 'None'; 
+                const date = selectedWeekStart.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                const hour = `${String(Math.floor(currentStartTime / 60)).padStart(2, '0')}:${String(currentStartTime % 60).padStart(2, '0')}`;
+                const location = localStorage.getItem('location');
+
+                const url = `http://localhost:8080/setappointment?therapistID=${therapistID}&therapistType=${therapistType}&patientId=${patientId}&appointmentType=${appointmentType}&confirmRequestType=${confirmRequestType}&problemDescription=${problemDescription}&date=${date}&hour=${hour}&location=${location}`;
+    
+                try {
+                    const response = fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data =  response.json();
+                    console.log('Appointment saved:', data);
+                } catch (error) {
+                    console.error('Error saving appointment:', error);
+                }
+    
+                closeForm();
+            } else {
+                alert('Bitte alle Felder ausfüllen.');
+            }
+        }
+    
+        async function deleteAppointment() {
+            if (currentCell) {
+                currentCell.innerHTML = '';
+                currentCell.classList.remove('booked');
+                currentCell.style.display = ''; // Stelle die Anzeige der Zelle wieder her
+
+                const appointmentID = localStorage.getItem('appointmentID');
+
+                const url = `http://localhost:8080/deleteappointment?appointmentID=${appointmentID}}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    console.log('Appointment saved:', data);
+                } catch (error) {
+                    console.error('Error saving appointment:', error);
+                }
+
+                closeForm();
+            }
+        }
+    
+        function editTherapist(index) {
+            currentTherapistIndex = index;
+            const currentName = document.getElementById(`therapist-header-${index}`).textContent;
+            document.getElementById('therapist-name').value = currentName;
+    
+            const currentTreatments = therapistTreatments[index] || [];
+            document.querySelectorAll('#therapist-treatments input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = currentTreatments.includes(checkbox.value);
+            });
+    
+            therapistForm.style.display = 'block';
+        }
+    
+        function closeTherapistForm() {
+            therapistForm.style.display = 'none';
+            document.getElementById('therapist-name').value = '';
+        }
+    
+        function saveTherapist() {
+            const newName = document.getElementById('therapist-name').value;
+            if (newName) {
+                document.getElementById(`therapist-header-${currentTherapistIndex}`).textContent = newName;
+    
+                const selectedTreatments = [];
+                document.querySelectorAll('#therapist-treatments input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedTreatments.push(checkbox.value);
+                });
+                therapistTreatments[currentTherapistIndex] = selectedTreatments;
+    
+                createCalendar(getLocationFromUrl()); // Update the calendar with the new therapist name and treatments
+                closeTherapistForm();
+            } else {
+                alert('Bitte den Namen des Therapeuten eingeben.');
+            }
+        }
+        function deleteTherapist() {
+            const therapistHeaders = document.querySelectorAll('#therapist-headers th');
+            therapistHeaders[currentTherapistIndex + 1].remove(); // +1 because first th is time header
+            createCalendar(getLocationFromUrl()); // Update the calendar with the remaining therapists
+            closeTherapistForm();
+        }
+    
+        function openAddTherapistForm() {
+            addTherapistForm.style.display = 'block';
+        }
+    
+        function closeAddTherapistForm() {
+            addTherapistForm.style.display = 'none';
+            document.getElementById('new-therapist-name').value = '';
+            document.querySelectorAll('#new-therapist-treatments input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+    
+        function saveNewTherapist() {
+            const newName = document.getElementById('new-therapist-name').value;
+            if (newName) {
+                const therapistHeaders = document.getElementById('therapist-headers');
+                const newIndex = therapistHeaders.children.length - 1; // -1 because the last element is the plus button
+                const newTh = document.createElement('th');
+                newTh.id = `therapist-header-${newIndex}`;
+                newTh.textContent = newName;
+                newTh.onclick = () => editTherapist(newIndex);
+                therapistHeaders.insertBefore(newTh, therapistHeaders.lastElementChild); // Insert before the plus button
+    
+                const selectedTreatments = [];
+                document.querySelectorAll('#new-therapist-treatments input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedTreatments.push(checkbox.value);
+                });
+                therapistTreatments[newIndex] = selectedTreatments;
+    
+                createCalendar(getLocationFromUrl()); // Update the calendar with the new therapist
+                closeAddTherapistForm();
+            } else {
+                alert('Bitte den Namen des Therapeuten eingeben.');
+            }
+        }
+    
+        function handleDateChange(event) {
+            const dateString = event.target.value;
+            const date = new Date(dateString);
+            const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
+            event.target.value = formattedDate;
+            goToWeek(dateString);
+            highlightSelectedDay(date.getDay() - 1); // Correcting to match the index
+        }
+    
+        function getLocationFromUrl() {
+            const url = new URL(window.location.href);
+            return url.searchParams.get('location') || 'koenigstrasse'; // Default to 'koenigstrasse'
+        }
+    
+        function openMessages() {
+            const userEmail = localStorage.getItem('email'); // Die E-Mail der Praxis
+            const patientEmail = "s@gmail.com"; // Hier setzen Sie die E-Mail des Patienten dynamisch
+    
+            if (!userEmail || !patientEmail) {
+                alert('Benutzerdaten oder Patienten-E-Mail fehlen. Bitte melden Sie sich erneut an.');
+                return;
+            }
+    
+            window.location.href = `nachricht-praxis.html?practiceEmail=${encodeURIComponent(userEmail)}&patientEmail=${encodeURIComponent(patientEmail)}`;
+        }
+    
+    
+    
+        createCalendar(getLocationFromUrl());
+        selectDay(new Date().getDay() - 1); // Set to the current day
+    </script>
+    

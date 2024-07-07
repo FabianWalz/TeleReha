@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Neues Passwort anzeigen</title>
+</head>
+
+<body>
+    <h2>Ihr neues Passwort</h2>
+    <p>Ihr neues Passwort lautet: <strong id="new-password"></strong></p>
+    <p>Bitte notieren Sie sich dieses Passwort und bewahren Sie es sicher auf.</p>
+    <a href="login.html">Zurück zur Anmeldeseite</a>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            const newPassword = params.get('password');
+            if (newPassword) {
+                document.getElementById('new-password').textContent = newPassword;
+            } else {
+                document.getElementById('new-password').textContent = 'Fehler: Kein Passwort gefunden.';
+            }
+        });
+    </script>
+</body>
+
+</html>

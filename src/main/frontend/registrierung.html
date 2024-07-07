@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registrierung bei TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="registrierung.css">
+</head>
+
+<body>
+    <div class="register-container">
+        <h2>Konto erstellen</h2>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="first_name">Vorname:</label>
+                <input type="text" id="first_name" placeholder="Geben Sie Ihren Vornamen ein" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Nachname:</label>
+                <input type="text" id="last_name" placeholder="Geben Sie Ihren Nachnamen ein" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-Mail:</label>
+                <input type="email" id="email" placeholder="Ihre E-Mail-Adresse" required>
+            </div>
+            <div class="form-group">
+                <label for="birthdate">Geburtsdatum:</label>
+                <input type="date" id="birthdate" required>
+            </div>
+            <div class="form-group">
+                <label>Adresse:</label>
+                <input type="text" id="streetAddr" placeholder="Straße" required>
+                <input type="text" id="houseNumAddr" placeholder="Hausnummer" required>
+                <input type="text" id="cityAddr" placeholder="Stadt" required>
+                <input type="text" id="postalCodeAddr" placeholder="Postleitzahl" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Rolle:</label>
+                <select id="role" required>
+                    <option value="" disabled selected>Wählen Sie Ihre Rolle</option>
+                    <option value="patient">Patient</option>
+                    <option value="praxis">Praxis</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="phoneNum">Telefonnummer:</label>
+                <input type="tel" id="phoneNum" placeholder="Ihre Telefonnummer" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" placeholder="Wählen Sie ein sicheres Passwort" required>
+            </div>
+            <div class="form-group">
+                <label for="password_repeat">Passwort wiederholen:</label>
+                <input type="password" id="password_repeat" placeholder="Wiederholen Sie Ihr Passwort" required>
+            </div>
+            <button type="submit" class="large-button">Konto erstellen</button>
+        </form>
+        <div class="links">
+            <p>Schon ein Konto? <a href="login.html">Anmelden</a></p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("register-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+                registerUser();
+            });
+        });
+
+        function registerUser() {
+            const firstName = document.getElementById("first_name").value;
+            const lastName = document.getElementById("last_name").value;
+            const email = document.getElementById("email").value;
+            const birthdate = document.getElementById("birthdate").value;
+            const streetAddr = document.querySelector('input[placeholder="Straße"]').value;
+            const houseNumAddr = document.querySelector('input[placeholder="Hausnummer"]').value;
+            const cityAddr = document.querySelector('input[placeholder="Stadt"]').value;
+            const postalCodeAddr = document.querySelector('input[placeholder="Postleitzahl"]').value;
+            const role = document.getElementById("role").value;
+            const phoneNum = document.getElementById("phoneNum").value;
+            const password = document.getElementById("password").value;
+            const passwordRepeat = document.getElementById("password_repeat").value;
+
+            if (password !== passwordRepeat) {
+                alert("Passwörter stimmen nicht überein!");
+                return;
+            }
+
+            const params = new URLSearchParams({
+                email: email,
+                pw: password,
+                pw2: passwordRepeat,
+                fname: firstName,
+                lname: lastName,
+                bDate: birthdate,
+                streetAddr: streetAddr,
+                houseNumAddr: houseNumAddr,
+                cityAddr: cityAddr,
+                postalCodeAddr: postalCodeAddr,
+                role: role,
+                phoneNum: phoneNum
+            });
+
+            const url = `http://localhost:8080/register?${params.toString()}`;
+
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Registration response data:', data);
+
+                    if (data.StatusCode === "0") {
+                        alert("Registrierung erfolgreich!");
+                        localStorage.setItem('userId', data.userId); // Save userId
+                        window.location.href = 'login.html';
+                    } else {
+                        alert("Fehler bei der Registrierung: " + data.Nachricht);
+                    }
+                })
+                .catch(error => {
+                    console.error("Fehler bei der Registrierung:", error);
+                    alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+                });
+        }
+    </script>
+</body>
+
+</html>

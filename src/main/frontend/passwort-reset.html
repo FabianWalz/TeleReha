@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Passwort zurücksetzen - TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="passwort-reset.css">
+</head>
+
+<body>
+    <div class="reset-container">
+        <h2>Passwort zurücksetzen</h2>
+        <p>Geben Sie Ihre E-Mail-Adresse ein, um ein neues Passwort zu erhalten.</p>
+
+        <form id="reset-form" onsubmit="resetPassword(event)">
+            <div class="form-group">
+                <input type="email" id="email" placeholder="Ihre E-Mail-Adresse" required>
+            </div>
+
+            <button type="submit" class="large-button">Neues Passwort anfordern</button>
+        </form>
+
+        <div class="links">
+            <p>Zurück zur <a href="login.html">Anmeldeseite</a></p>
+        </div>
+    </div>
+
+    <script>
+        function resetPassword(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+
+            fetch(`http://localhost:8080/reset-password/generate?email=${encodeURIComponent(email)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Passwort erfolgreich zurückgesetzt. Ihr neues Passwort lautet: " + data.newPassword);
+                        window.location.href = 'login.html'
+                    } else {
+                        alert("Fehler bei der Passwortzurücksetzung: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Fehler bei der Passwortzurücksetzung:", error);
+                    alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+                });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hauptseite - TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="terminbuchung0.css">
+</head>
+
+<body>
+    <header>
+        <h1>Übersicht</h1>
+    </header>
+    <div class="main-container">
+        <p class="instruction-text">Bitte wählen Sie aus</p>
+        <div class="button-container">
+            <a href="#" id="meine-termine" class="large-button">Meine Termine</a>
+            <a href="terminbuchung1.html" class="large-button">Neuen Termin buchen</a>
+            <a href="rezepte.html" class="large-button">Meine Rezepte</a>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        document.getElementById('meine-termine').addEventListener('click', function(event) {
+            event.preventDefault(); // Verhindert das Standardverhalten des Links
+            const patientID = localStorage.getItem('email'); // Hier muss die tatsächliche patientID eingefügt werden
+            fetch(`http://localhost:8080/appointmentForPatient?patientID=${patientID}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Speichern der Daten in localStorage
+                    localStorage.setItem('appointments', JSON.stringify(data.appointments));
+                    // Weiterleitung zur Terminübersichtseite
+                    window.location.href = 'terminuebersicht.html';
+                })
+                .catch(error => console.error('Fehler:', error));
+        });
+
+       
+    </script>
+</body>
+
+</html>

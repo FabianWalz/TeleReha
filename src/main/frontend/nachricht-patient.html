@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Patientenseite</title>
+    <link rel="stylesheet" type="text/css" href="nachrichtpatient.css">
+</head>
+
+<body>
+    <header>
+        <h1>Patienten-Nachrichten</h1>
+    </header>
+    <div class="chat-app">
+        <div class="chat-list">
+            <header>
+                <div class="start-chat-container">
+                    <select id="location-select">
+                        <option value="">Wähle einen Standort</option>
+                        <option value="koenigstrasse">Königstraße 70, 70173 Stuttgart</option>
+                        <option value="schwabstrasse">Schwabstr. 93, 70193 Stuttgart</option>
+                        <option value="ludwigsburger1">Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen</option>
+                        <option value="ludwigsburger2">Ludwigsburger Str. 191, 70435 Stuttgart</option>
+                        <option value="hoehenpark">Am Höhenpark 4, 70192 Stuttgart</option>
+                        <option value="marienplatz">Marienplatz 4, 70178 Stuttgart</option>
+                        <option value="moehringer">Möhringer Landstraße 5, 70563 Stuttgart</option>
+                    </select>
+                    <button id="start-chat-button">Chat starten</button>
+                </div>
+            </header>
+            <ul id="conversation-list">
+                <!-- Konversationen werden hier angezeigt -->
+            </ul>
+        </div>
+        <div class="chat-container">
+            <header>
+                <h3 id="current-conversation">Nachrichten</h3>
+            </header>
+            <div class="messages" id="message-container">
+                <!-- Nachrichten werden hier angezeigt -->
+            </div>
+            <div class="input-area">
+                <input type="text" id="message-input" placeholder="Nachricht eingeben...">
+                <button id="send-button">Senden</button>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userEmail = localStorage.getItem('email');
+            const conversationList = document.getElementById('conversation-list');
+            const locationSelect = document.getElementById('location-select');
+            const startChatButton = document.getElementById('start-chat-button');
+            const sendButton = document.getElementById('send-button');
+            let currentPracticeEmail = '';
+            let conversations = JSON.parse(localStorage.getItem(`conversations_${userEmail}`)) || {};
+            let messages = {};
+
+            const socket = new WebSocket(`ws://localhost:8080/msgwebsocket?userEmail=${encodeURIComponent(userEmail)}`);
+
+            const locationMap = {
+                "koenigstrasse": "koenigstr@praxis-kuhn.de",
+                "schwabstrasse": "info@praxis-kuhn.de",
+                "ludwigsburger1": "zuffenhausen@praxis-kuhn.de",
+                "ludwigsburger2": "mail@kuhn-cakirli.de",
+                "hoehenpark": "hoehenpark@praxis-kuhn.de",
+                "marienplatz": "marienplatz@praxis-kuhn.de",
+                "moehringer": "vaihingen@praxis-kuhn.de"
+            };
+
+            function saveConversations() {
+                localStorage.setItem(`conversations_${userEmail}`, JSON.stringify(conversations));
+            }
+
+            function displayConversations() {
+                conversationList.innerHTML = '';
+                Object.keys(conversations).forEach(email => {
+                    const li = document.createElement('li');
+                    li.textContent = conversations[email].name;
+                    li.dataset.email = email;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Löschen';
+                    deleteButton.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        deleteConversation(email);
+                    });
+                    li.appendChild(deleteButton);
+
+                    li.addEventListener('click', () => {
+                        currentPracticeEmail = email;
+                        localStorage.setItem('currentPracticeEmail', email);
+                        if (socket.readyState === WebSocket.OPEN) {
+                            loadMessages(userEmail, email);
+                        }
+                        updateCurrentConversation(conversations[email].name);
+                    });
+                    conversationList.appendChild(li);
+                });
+            }
+
+            function deleteConversation(email) {
+                delete conversations[email];
+                delete messages[email];
+                saveConversations();
+                displayConversations();
+                if (currentPracticeEmail === email) {
+                    document.getElementById('message-container').innerHTML = '';
+                    updateCurrentConversation('Nachrichten');
+                    currentPracticeEmail = '';
+                }
+            }
+
+            startChatButton.addEventListener('click', () => {
+                const selectedLocation = locationSelect.value;
+                if (selectedLocation && locationMap[selectedLocation]) {
+                    const practiceEmail = locationMap[selectedLocation];
+                    const practiceName = locationSelect.options[locationSelect.selectedIndex].text;
+                    if (!conversations[practiceEmail]) {
+                        conversations[practiceEmail] = { name: practiceName };
+                        saveConversations();
+                        displayConversations();
+                    }
+                    currentPracticeEmail = practiceEmail;
+                    localStorage.setItem('currentPracticeEmail', practiceEmail);
+                    if (socket.readyState === WebSocket.OPEN) {
+                        loadMessages(userEmail, practiceEmail);
+                    }
+                    updateCurrentConversation(practiceName);
+                } else {
+                    alert('Bitte wählen Sie einen gültigen Standort.');
+                }
+            });
+
+            socket.onopen = () => {
+                console.log('WebSocket connected, Session ID:', socket.protocol);
+                Object.keys(conversations).forEach(email => {
+                    loadMessages(userEmail, email);
+                });
+            };
+
+            socket.onmessage = (event) => {
+                const messageData = JSON.parse(event.data);
+                if (messageData.msgs) {
+                    const practiceEmail = messageData.to === userEmail ? messageData.from : messageData.to;
+                    messages[practiceEmail] = messageData.msgs;
+                    if (practiceEmail === currentPracticeEmail) {
+                        displayMessages(practiceEmail);
+                    }
+                } else {
+                    addMessage(messageData);
+                }
+            };
+
+            socket.onclose = () => {
+                console.log('WebSocket disconnected, Session ID:', socket.protocol);
+            };
+
+            function loadMessages(from, to) {
+                console.log(`Loading messages for conversation from ${from} to ${to}`);
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ from, to, msg: '' }));
+                }
+            }
+
+            function sendMessage() {
+    const input = document.getElementById('message-input');
+    const msg = input.value;
+    if (msg.trim() !== '' && socket.readyState === WebSocket.OPEN && currentPracticeEmail) {
+        const now = new Date();
+        const date = now.toLocaleDateString();
+        const time = now.toLocaleTimeString();
+        const message = { from: userEmail, to: currentPracticeEmail, msg, date, time };
+        socket.send(JSON.stringify(message));
+        input.value = '';
+    } else {
+        console.error('WebSocket is not open, message is empty, or practice email is not set.');
+    }
+}
+
+
+            sendButton.addEventListener('click', sendMessage);
+
+            function addMessage(message) {
+                const practiceEmail = message.to === userEmail ? message.from : message.to;
+                if (!messages[practiceEmail]) {
+                    messages[practiceEmail] = [];
+                }
+                if (!messages[practiceEmail].some(m => m.time === message.time)) {
+                    messages[practiceEmail].push(message);
+                    if (practiceEmail === currentPracticeEmail) {
+                        displayMessage(message);
+                    }
+                }
+                if (!conversations[practiceEmail]) {
+                    conversations[practiceEmail] = { name: practiceEmail };
+                    saveConversations();
+                    displayConversations();
+                }
+            }
+
+            function displayMessages(email) {
+                const container = document.getElementById('message-container');
+                container.innerHTML = '';
+                if (messages[email]) {
+                    messages[email].slice().reverse().forEach(displayMessage);
+                }
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function displayMessage(message) {
+    const container = document.getElementById('message-container');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = message.from === userEmail ? 'patient' : 'therapist';
+
+    // Formatieren von Datum und Uhrzeit
+    const messageDate = new Date(message.time).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const messageTime = new Date(message.time).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+    msgDiv.innerHTML = `<p>${message.msg}</p><p class="timestamp">${messageDate} ${messageTime}</p>`;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+
+            function updateCurrentConversation(practiceName) {
+                const conversationHeader = document.getElementById('current-conversation');
+                conversationHeader.textContent = `Nachrichten - ${practiceName}`;
+            }
+
+            window.addEventListener('beforeunload', () => {
+                socket.close();
+            });
+
+            displayConversations();
+
+            const lastConversationEmail = localStorage.getItem('currentPracticeEmail');
+            if (lastConversationEmail) {
+                currentPracticeEmail = lastConversationEmail;
+                if (conversations[currentPracticeEmail]) {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        loadMessages(userEmail, currentPracticeEmail);
+                    }
+                    updateCurrentConversation(conversations[currentPracticeEmail]?.name || 'Unbekannt');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

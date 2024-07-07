@@ -1,0 +1,123 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    /* Heller Hintergrund */
+}
+
+.back-button {
+    padding: 10px;
+    /* Innenabstand für den Button */
+    text-align: left;
+    /* Linksausrichtung */
+}
+
+.back-button a {
+    font-size: 36px;
+    /* Dickerer Pfeil */
+    color: #000000;
+    /* Schwarze Farbe */
+    text-decoration: none;
+    /* Kein Unterstrich */
+    transition: all 0.2s;
+    /* Weicher Übergang bei Hover */
+}
+
+.back-button a:hover {
+    color: #333333;
+    /* Dunkleres Schwarz bei Hover */
+}
+
+/* Container für das Zurücksetzen des Passworts */
+.reset-container {
+    max-width: 350px;
+    /* Reduzierte Breite für den Container */
+    margin: 50px auto;
+    /* Zentrierung */
+    padding: 20px;
+    /* Gleiche Padding */
+    background-color: #ffffff;
+    /* Weißer Hintergrund */
+    border: 1px solid #ddd;
+    /* Dezente Umrandung */
+    border-radius: 10px;
+    /* Gleiche abgerundete Ecken */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    /* Schatten */
+    text-align: center;
+    /* Gleiche Ausrichtung */
+}
+
+.reset-container h2 {
+    margin-bottom: 20px;
+    /* Gleicher Abstand */
+}
+
+.form-group {
+    margin-bottom: 15px;
+    /* Gleicher Abstand */
+    text-align: left;
+    /* Linksausrichtung */
+}
+
+.form-group label {
+    display: block;
+    /* Blockelement für Label */
+    font-weight: bold;
+}
+
+.form-group input {
+    width: calc(100% - 20px);
+    /* Breite berechnen mit Außenabstand */
+    padding: 10px;
+    /* Gleicher Innenabstand */
+    border: 1px solid #ccc;
+    /* Gleiche Umrandung */
+    border-radius: 5px;
+    /* Gleiche abgerundete Ecken */
+}
+
+/* Größerer Button für "Link senden" */
+.large-button {
+    width: calc(100% - 20px);
+    /* Breite berechnen mit Außenabstand */
+    padding: 15px 30px;
+    /* Größerer Button */
+    font-size: 18px;
+    /* Größere Schrift */
+    background-color: #00AEEF;
+    /* Grüner Hintergrund */
+    color: white;
+    /* Weißer Text */
+    border: none;
+    /* Kein Rand */
+    border-radius: 5px;
+    /* Abgerundete Ecken */
+    cursor: pointer;
+    /* Cursor als Hand */
+    transition: background-color 0.3s;
+    /* Weicher Übergang bei Hover */
+}
+
+.large-button:hover {
+    background-color: #00AEEF;
+    /* Dunkleres Grün bei Hover */
+}
+
+.links {
+    margin-top: 15px;
+    /* Gleicher Abstand */
+}
+
+.links a {
+    text-decoration: none;
+    /* Kein Unterstrich */
+    color: #00AEEF;
+    /* Gleiche grüne Farbe */
+}
+
+.links a:hover {
+    text-decoration: underline;
+    /* Unterstrich bei Hover */
+}

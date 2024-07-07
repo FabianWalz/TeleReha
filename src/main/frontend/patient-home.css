@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #00AEEF;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.patient-header {
+    background-color: #00AEEF;
+    /* Hellblau als Primärfarbe */
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2em;
+    /* Innenabstand erhöht */
+    position: relative;
+}
+
+.patient-header h1 {
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2em;
+    /* Schriftgröße erhöht */
+}
+
+.profile-link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    margin-right: 20px;
+    cursor: pointer;
+    margin-left: auto;
+    background-color: #008BB0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.profile-link:hover {
+    background-color: #006F8A;
+    /* Noch dunklerer Blauton bei Hover */
+}
+
+.logout-button {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    margin-right: 20px;
+    cursor: pointer;
+    background-color: #FF5733;
+    /* Orange Hintergrundfarbe */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    margin-left: 20px;
+}
+
+.logout-button:hover {
+    background-color: #CC4526;
+    /* Dunklerer Orangeton bei Hover */
+}
+
+.patient-buttons-container {
+    background-color: #00AEEF;
+    /* Hintergrund wie die Überschrift */
+    padding: 20px 0;
+    /* Abstand oben und unten */
+}
+
+.patient-buttons {
+    text-align: center;
+    /* Zentriert die Schaltflächen */
+}
+
+.patient-buttons button {
+    padding: 15px 30px;
+    /* Große Schaltflächen */
+    font-size: 18px;
+    /* Größere Schrift */
+    background-color: #008BB0;
+    /* Etwas dunklerer Hintergrund */
+    color: white;
+    /* Weißer Text */
+    border: none;
+    /* Kein Rand */
+    border-radius: 5px;
+    /* Abgerundete Ecken */
+    cursor: pointer;
+    /* Cursor als Hand */
+    margin: 10px;
+    /* Abstand zwischen den Schaltflächen */
+}
+
+.patient-buttons button:hover {
+    background-color: #006F8A;
+    /* Noch dunklerer Blauton bei Hover */
+}
+
+/* CSS für das Bild */
+img {
+    width: 100%;
+    /* Volle Breite */
+    max-height: 565px;
+    /* Maximalhöhe auf 600px begrenzen */
+    object-fit: cover;
+    /* Das Bild so zuschneiden, dass es den verfügbaren Platz optimal ausfüllt */
+    display: block;
+    /* Entfernt Leerraum unterhalb des Bildes */
+    margin: 0;
+    /* Kein zusätzlicher Rand */
+}
+
+footer {
+    text-align: center;
+    padding: 5px;
+    background-color: #00AEEF;
+    /* Hellblau wie die Überschrift */
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    /* Ensures the footer is pushed to the bottom */
+}

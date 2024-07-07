@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Standortauswahl - TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="standortwahl.css">
+    <script>
+        function redirectToChat() {
+            const practiceEmail = document.getElementById('standort').value;
+            if (practiceEmail) {
+                window.location.href = 'nachricht-patient.html?practiceEmail=' + encodeURIComponent(practiceEmail);
+            } else {
+                alert('Bitte wählen Sie einen Standort aus.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Standortauswahl</h2>
+        <p>Bitte wählen Sie Ihren Standort, um fortzufahren:</p>
+        <select id="standort">
+            <option value="">Bitte auswählen</option>
+            <option value="koenigstr@praxis-kuhn.de">Königstraße 70, 70173 Stuttgart</option>
+            <option value="info@praxis-kuhn.de">Schwabstr. 93, 70193 Stuttgart</option>
+            <option value="zuffenhausen@praxis-kuhn.de">Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen</option>
+            <option value="mail@kuhn-cakirli.de">Ludwigsburger Str. 191, 70435 Stuttgart</option>
+            <option value="hoehenpark@praxis-kuhn.de">Am Höhenpark 4, 70192 Stuttgart</option>
+            <option value="marienplatz@praxis-kuhn.de">Marienplatz 4, 70178 Stuttgart</option>
+            <option value="vaihingen@praxis-kuhn.de">Möhringer Landstraße 5, 70563 Stuttgart</option>
+        </select>
+        <button onclick="redirectToChat()">Weiter</button>
+    </div>
+</body>
+</html>

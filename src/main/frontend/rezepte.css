@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+}
+
+header {
+    background-color: #00AEEF;
+    color: white;
+    padding: 1em 0;
+    text-align: center;
+}
+
+.main-container {
+    padding: 2em;
+    text-align: center;
+}
+
+.instruction-text {
+    font-size: 1.2em;
+    margin-bottom: 1em;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.large-button {
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    padding: 1em 2em;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 0.5em;
+    transition: background-color 0.3s ease;
+}
+
+.large-button:hover {
+    background-color: #00AEEF;
+}
+
+footer {
+    background-color: #00AEEF;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}

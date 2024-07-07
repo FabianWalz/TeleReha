@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Passwort zurücksetzen - Bestätigung</title>
+    <link rel="stylesheet" type="text/css" href="passwort-reset.css">
+    <script src="functions.js" defer></script>
+</head>
+
+<body>
+    <div class="reset-container">
+        <h2>Neues Passwort setzen</h2>
+        <p>Geben Sie Ihr neues Passwort ein.</p>
+
+        <form id="confirm-reset-form">
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Neues Passwort" required>
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="confirm-password" placeholder="Passwort bestätigen" required>
+            </div>
+
+            <button type="submit" class="large-button">Passwort setzen</button>
+        </form>
+
+        <div class="links">
+            <p>Zurück zur <a href="login.html">Anmeldeseite</a></p>
+        </div>
+    </div>
+</body>
+</html>

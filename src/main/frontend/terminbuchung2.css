@@ -1,0 +1,211 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #00AEEF;
+    color: white;
+    text-align: center;
+    padding: 5px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.calendar-nav button {
+    padding: 15px 60px;
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.calendar-nav button:hover {
+    background-color: #00AEEF;
+}
+
+.week-label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    flex: 2;
+    text-align: center;
+}
+
+#date-headers {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.day {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    background-color: #00AEEF;
+    color: white;
+    cursor: pointer;
+    border-right: 1px solid white;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+.day:last-child {
+    border-right: none;
+}
+
+.day:hover {
+    background-color: #00AEEF;
+}
+
+.day div:first-child {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.day div:last-child {
+    font-size: 16px;
+    margin-top: 5px;
+    color: #e0e0e0;
+}
+
+#uhrzeit-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.day-container {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.day-container button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.day-container button:hover {
+    background-color: #00AEEF;
+}
+
+#confirmation {
+    text-align: left;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-grow: 1;
+}
+
+#confirmation h2 {
+    text-align: center;
+    font-size: 22px;
+}
+
+#confirmation form div {
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#confirmation form div label {
+    font-weight: bold;
+    color: #333;
+    flex: 1;
+    max-width: 300px;
+    font-size: 16px;
+}
+
+#confirmation form div span {
+    flex: 2;
+    text-align: left;
+    color: #000;
+    font-size: 16px;
+}
+
+.btns {
+    text-align: center;
+    margin-top: 10px;
+    /* Reduced margin to decrease space below confirmation section */
+}
+
+.btns input[type="submit"] {
+    padding: 15px 60px;
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    display: block;
+    margin: 0 auto;
+}
+
+.btns input[type="submit"]:hover {
+    background-color: #00AEEF;
+}
+
+footer {
+    text-align: center;
+    padding: 5px;
+    background-color: #00AEEF;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    position: fixed;
+    bottom: 0;
+}

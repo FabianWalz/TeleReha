@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Verfügbare Zeiten</title>
+    <link rel="stylesheet" type="text/css" href="terminbuchung2.css">
+</head>
+
+<body>
+    <header>
+        <h1>Verfügbare Zeiten</h1>
+    </header>
+
+    <div class="container">
+        <div id="available-times">
+            <div class="calendar-nav">
+                <button onclick="changeWeek(-1)">Vorherige Woche</button>
+                <span class="week-label" id="week-label"></span>
+                <button onclick="changeWeek(1)">Nächste Woche</button>
+            </div>
+            <div id="date-headers" class="weekdays">
+                <!-- Dynamische Datumsüberschriften werden hier hinzugefügt -->
+            </div>
+            <div id="uhrzeit-container" class="uhrzeit-container">
+                <!-- Verfügbare Uhrzeiten werden hier hinzugefügt -->
+            </div>
+        </div>
+
+        <div id="confirmation" style="display: none;">
+            <h2>Überblick</h2>
+            <form id="confirmation-form" onsubmit="return handleSubmit()">
+                <div>
+                    <label>Datum: </label>
+                    <span id="best-datum"></span>
+                </div>
+                <div>
+                    <label>Uhrzeit: </label>
+                    <span id="best-uhrzeit"></span>
+                </div>
+                <div>
+                    <label>Standort: </label>
+                    <span id="best-standort-display"></span>
+                </div>
+                <div>
+                    <label>Art des Termins: </label>
+                    <span id="best-terminart-display"></span>
+                </div>
+                <div>
+                    <label>Leistung: </label>
+                    <span id="best-leistung-display"></span>
+                </div>
+                <div>
+                    <label>Therapeut: </label>
+                    <span id="best-therapeut-display"></span>
+                </div>
+                <div id="rezept-display-container" style="display: none;">
+                    <label>Rezept: </label>
+                    <span id="rezept-display"></span>
+                </div>
+                <div>
+                    <input type="hidden" id="best-standort" name="Standort">
+                    <input type="hidden" id="best-terminart" name="Terminart">
+                    <input type="hidden" id="best-leistung" name="Leistung">
+                    <input type="hidden" id="best-therapeut" name="Therapeut">
+                    <input type="hidden" id="best-dauer" name="Dauer">
+                    <input type="hidden" id="best-rezept" name="Rezept">
+                </div>
+                <div class="btns">
+                    <input type="submit" value="Bestätigen">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        const daysOfWeek = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag"];
+        let currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() - (currentDate.getDay() - 1)); // Set to Monday of the current week
+        let selectedDate = null;
+        let selectedTime = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedLocation = urlParams.get('Standort');
+        const selectedTerminart = urlParams.get('Terminart');
+        const selectedLeistung = urlParams.get('Leistung');
+        const selectedTherapeut = urlParams.get('Therapeut');
+        const selectedDauer = parseInt(urlParams.get('Dauer'));
+        const hasRezept = urlParams.get('Rezept') === 'Ja';
+        const rezeptUpload = urlParams.get('RezeptUpload');
+
+        const openingHours = {
+            'Königstraße 70, 70173 Stuttgart': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'Schwabstr. 93, 70193 Stuttgart': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'Ludwigsburger Str. 191, 70435 Stuttgart': { 'Mon-Thu': [420, 1200], 'Fri': [420, 1080] },
+            'Am Höhenpark 4, 70192 Stuttgart': { 'Mon-Thu': [420, 1200], 'Fri': [420, 960] },
+            'Marienplatz 4, 70178 Stuttgart': { 'Mon-Thu': [480, 1200], 'Fri': [480, 840] },
+            'Möhringer Landstraße 5, 70563 Stuttgart': {
+                'Mon': [420, 1200],
+                'Tue': [480, 1200],
+                'Wed': [420, 1200],
+                'Thu': [480, 1200],
+                'Fri': [420, 780]
+            }
+        };
+
+        function getOpeningHours(day, location) {
+            const daysMap = {
+                1: 'Mon',
+                2: 'Tue',
+                3: 'Wed',
+                4: 'Thu',
+                5: 'Fri'
+            };
+
+            const weekDay = daysMap[day];
+            const hours = openingHours[location];
+            return hours ? (hours[weekDay] || hours['Mon-Thu']) : [420, 1200];
+        }
+
+        function populateWeek() {
+            const weekLabel = document.getElementById('week-label');
+            const startOfWeek = new Date(currentDate);
+            const endOfWeek = new Date(currentDate);
+            endOfWeek.setDate(startOfWeek.getDate() + 4); // Adjusted to end on Friday
+            weekLabel.textContent = `Woche von ${startOfWeek.toLocaleDateString('de-DE')} bis ${endOfWeek.toLocaleDateString('de-DE')}`;
+
+            const dateHeaders = document.getElementById('date-headers');
+            dateHeaders.innerHTML = '';
+
+            for (let i = 0; i < 5; i++) { // Adjusted to show only weekdays
+                const day = new Date(currentDate);
+                day.setDate(currentDate.getDate() + i);
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.innerHTML = `<div>${daysOfWeek[day.getDay() - 1]}</div><div>${day.toLocaleDateString('de-DE')}</div>`;
+                dateHeaders.appendChild(dayDiv);
+            }
+
+            populateTimes();
+        }
+
+
+
+
+        
+        function populateTimes() {
+    const uhrzeitContainer = document.getElementById('uhrzeit-container');
+    uhrzeitContainer.innerHTML = '';
+
+    // Vorhandene Termine aus dem Local Storage abrufen
+    const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+    for (let i = 0; i < 5; i++) { // Adjusted to show only weekdays
+        const day = new Date(currentDate);
+        day.setDate(currentDate.getDate() + i);
+
+        const dayContainer = document.createElement('div');
+        dayContainer.classList.add('day-container');
+
+        const openingHoursForDay = getOpeningHours(day.getDay(), selectedLocation);
+
+        for (let time = openingHoursForDay[0]; time < openingHoursForDay[1]; time += 20) {
+            const hour = Math.floor(time / 60);
+            const minute = time % 60;
+            const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+            // Überprüfen, ob dieser Zeit-Slot bereits belegt ist
+            const isSlotTaken = appointments.some(appointment => 
+                appointment.date === day.toLocaleDateString('de-DE') &&
+                appointment.hour === timeString &&
+                appointment.location === selectedLocation &&
+                appointment.therapistID === selectedTherapeut
+            );
+
+            const button = document.createElement('button');
+            button.textContent = timeString;
+
+            if (isSlotTaken) {
+                button.style.backgroundColor = 'red'; // Belegten Zeit-Slot rot anzeigen
+                button.disabled = true; // Belegten Zeit-Slot deaktivieren
+            } else {
+                button.addEventListener('click', () => {
+                    selectTime(day, timeString, time);
+                });
+            }
+
+            dayContainer.appendChild(button);
+        }
+
+        uhrzeitContainer.appendChild(dayContainer);
+    }
+}
+
+
+
+
+
+
+
+
+
+        function selectTime(date, time, startTime) {
+            selectedDate = date;
+            selectedTime = time;
+
+            // Berechnen, wie viele Slots benötigt werden
+            const slotsNeeded = Math.ceil(selectedDauer / 20);
+            const openingHoursForDay = getOpeningHours(selectedDate.getDay(), selectedLocation);
+
+            // Überprüfen, ob genug Slots verfügbar sind
+            let isAvailable = true;
+            for (let i = 0; i < slotsNeeded; i++) {
+                const slotTime = startTime + i * 20;
+                if (slotTime >= openingHoursForDay[1]) {
+                    isAvailable = false;
+                    break;
+                }
+            }
+
+            if (isAvailable) {
+                showConfirmation();
+            } else {
+                alert('Nicht genügend Slots verfügbar.');
+            }
+        }
+
+        function showConfirmation() {
+            document.getElementById('available-times').style.display = 'none';
+            document.getElementById('confirmation').style.display = 'block';
+
+            document.getElementById('best-datum').textContent = selectedDate.toLocaleDateString('de-DE');
+            document.getElementById('best-uhrzeit').textContent = selectedTime;
+            document.getElementById('best-standort-display').textContent = selectedLocation;
+            document.getElementById('best-terminart-display').textContent = selectedTerminart;
+            document.getElementById('best-leistung-display').textContent = selectedLeistung;
+            document.getElementById('best-therapeut-display').textContent = selectedTherapeut;
+
+            document.getElementById('best-standort').value = selectedLocation;
+            document.getElementById('best-terminart').value = selectedTerminart;
+            document.getElementById('best-leistung').value = selectedLeistung;
+            document.getElementById('best-therapeut').value = selectedTherapeut;
+            document.getElementById('best-dauer').value = selectedDauer;
+
+            if (hasRezept) {
+                document.getElementById('rezept-display-container').style.display = 'block';
+                document.getElementById('rezept-display').textContent = rezeptUpload ? 'Hochgeladen' : 'Ja';
+                document.getElementById('best-rezept').value = 'Ja';
+            } else {
+                document.getElementById('rezept-display-container').style.display = 'none';
+                document.getElementById('best-rezept').value = 'Nein';
+            }
+        }
+
+        function handleSubmit() {
+    const therapistID = encodeURIComponent(selectedTherapeut);
+    const therapistType = encodeURIComponent(selectedTerminart);
+    const patientId = localStorage.getItem('email'); // Replace with actual patient ID
+    const appointmentType = encodeURIComponent(selectedTerminart); // Replace with actual appointment type
+    const confirmRequestType = encodeURIComponent(selectedTerminart); // Replace with actual confirm request type
+    const problemDescription = encodeURIComponent(selectedLeistung);
+    const date = encodeURIComponent(selectedDate.toLocaleDateString('de-DE'));
+    const hour = encodeURIComponent(selectedTime);
+    const location = encodeURIComponent(selectedLocation);
+
+
+    const url = `http://localhost:8080/setappointment?therapistID=${therapistID}&therapistType=${therapistType}&patientId=${patientId}&appointmentType=${appointmentType}&confirmRequestType=${confirmRequestType}&problemDescription=${problemDescription}&date=${date}&hour=${hour}&location=${location}`;
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            alert('Termin erfolgreich gebucht, Bestätigung per Mail');
+            window.location.href = 'patient-home.html';
+        } else {
+            alert('Fehler bei der Terminbuchung. Bitte versuchen Sie es erneut.');
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Fehler bei der Terminbuchung. Bitte versuchen Sie es erneut.');
+    });
+
+    return false;
+}
+
+
+
+
+        populateWeek();
+    </script>
+</body>
+
+</html>

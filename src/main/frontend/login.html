@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Anmeldung bei TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <script src="functions.js" defer></script>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Anmelden bei TeleReha</h2>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">E-Mail:</label>
+                <input type="text" id="email" name="email" placeholder="Geben Sie Ihre E-Mail ein" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" name="password" placeholder="Geben Sie Ihr Passwort ein" required>
+            </div>
+
+            <button type="submit">Anmelden</button>
+        </form>
+
+        <div class="links">
+            <p>Kein Konto? <a href="registrierung.html">Registrieren</a></p>
+            <p>Passwort vergessen? <a href="passwort-reset.html">Passwort zurücksetzen</a></p>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+    <script>
+        const LoginConstants = {
+            STATUS_CODE: "StatusCode",
+            SUCCESS_CODE: "0",
+            FAIL_CODE: "1",
+            MESSAGE: "Nachricht",
+            USER_ROLE: "Benutzerrolle",
+        };
+
+        // Anmeldefunktion
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginForm = document.getElementById("login-form");
+
+            if (loginForm) {
+                loginForm.addEventListener("submit", function (event) {
+                    event.preventDefault(); // Verhindert das automatische Absenden des Formulars
+
+                    const email = loginForm.elements["email"].value;
+                    const password = loginForm.elements["password"].value;
+
+                    // Hier stellen wir die Verbindung zum Backend her
+                    fetch(`http://localhost:8080/login?email=${encodeURIComponent(email)}&pw=${encodeURIComponent(password)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Login response data:', data); // Debugging-Information
+
+                            if (data[LoginConstants.STATUS_CODE] !== LoginConstants.FAIL_CODE) {
+                                const userRole = data[LoginConstants.USER_ROLE];
+                                console.log('User role:', userRole); // Debugging-Information
+
+                                // Speichern Sie den Benutzernamen im LocalStorage
+                               
+
+                                if (userRole === "patient") {
+                                    // Weiterleitung zur Patienten-Startseite
+                                    localStorage.setItem('email', email);
+                                    window.location.href = "patient-home.html";
+
+                                } else if (userRole === "praxis") {
+                                    // Weiterleitung zur Praxis-Startseite
+                                    const locationMap = {
+                                        "koenigstr@praxis-kuhn.de": "koenigstrasse",
+                                        "info@praxis-kuhn.de": "schwabstrasse",
+                                        "zuffenhausen@praxis-kuhn.de": "ludwigsburger1",
+                                        "mail@kuhn-cakirli.de": "ludwigsburger2",
+                                        "hoehenpark@praxis-kuhn.de": "hoehenpark",
+                                        "marienplatz@praxis-kuhn.de": "marienplatz",
+                                        "vaihingen@praxis-kuhn.de": "moehringer"
+                                    };
+                                    const location = locationMap[email] || "";
+                                    localStorage.setItem('location', location);
+                                    localStorage.setItem('praxisemail', email);
+
+                                    window.location.href = `praxis-calendar.html?location=${location}`;
+                                } else {
+                                    alert("Unbekannte Benutzerrolle: " + userRole);
+                                }
+                            } else {
+                                alert(data[LoginConstants.MESSAGE]);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Fehler bei der Anmeldung:", error);
+                            alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+                        });
+                });
+            }
+        });
+
+    </script>
+</body>
+
+</html>

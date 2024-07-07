@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine gebuchten Termine</title>
+    <link rel="stylesheet" type="text/css" href="fortschritte.css">
+</head>
+
+<body>
+    <header>
+        <h1>Fortschritte</h1>
+    </header>
+
+    <div class="appointment-container">
+        <table id="appointment-table">
+            <thead>
+                <tr>
+                    <th>Übungen</th>
+                    <th>Abgeschlossen</th>
+                    <th>Datum</th>
+                    <th>Stunde</th>
+                    <th>Aktion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamische Termin-Daten werden hier eingefügt -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-container">
+        <h2>Neue Fortschritte hinzufügen</h2>
+        <form id="exercise-form">
+            <label for="exercise-info">Übung:</label>
+            <input type="text" id="exercise-info" name="exercise-info" required>
+            <label for="exercise-date">Datum:</label>
+            <input type="date" id="exercise-date" name="exercise-date" required>
+            <label for="exercise-hour">Stunde:</label>
+            <input type="time" id="exercise-hour" name="exercise-hour" required>
+            <button type="submit">Hinzufügen</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            renderAppointments();
+
+            document.getElementById('exercise-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                addExercise();
+            });
+
+            function renderAppointments() {
+                // Abrufen der Daten aus localStorage
+                let storedData = JSON.parse(localStorage.getItem('exercises'));
+                if (!storedData || !Array.isArray(storedData.exercises)) {
+                    storedData = { exercises: [] };
+                }
+                const exercises = storedData.exercises;
+                const tbody = document.getElementById('appointment-table').getElementsByTagName('tbody')[0];
+
+                // Alte Inhalte entfernen
+                tbody.innerHTML = '';
+
+                if (exercises.length > 0) {
+                    exercises.forEach(exercise => {
+                        const row = document.createElement('tr');
+                        const date = exercise.Day ? new Date(exercise.Day).toLocaleDateString('de-DE') : 'Kein Datum';
+                        row.innerHTML = `
+                            <td>${exercise.ExerciseInfo}</td>
+                            <td>${exercise.IsCompleted ? 'Ja' : 'Nein'}</td>
+                            <td>${date}</td>
+                            <td>${exercise.Hour || 'Keine Uhrzeit'}</td>
+                            <td><button class="delete-btn" data-id="${exercise.ExerciseID}">Löschen</button></td>
+                        `;
+                        tbody.appendChild(row);
+
+                        // Hinzufügen der Event-Listener für die Lösch-Buttons
+                        row.querySelector('.delete-btn').addEventListener('click', function () {
+                            const exerciseID = this.getAttribute('data-id');
+                            deleteExercise(exerciseID);
+                        });
+                    });
+                } else {
+                    console.error('Keine Fortschritte gefunden');
+                }
+            }
+
+            function addExercise() {
+                const exerciseInfo = document.getElementById('exercise-info').value;
+                const exerciseDate = document.getElementById('exercise-date').value;
+                const exerciseHour = document.getElementById('exercise-hour').value;
+
+                const newExercise = {
+                    PatientID: localStorage.getItem('email'), // This can be dynamically set if needed
+                    ExerciseInfo: exerciseInfo,
+                    Day: exerciseDate,
+                    Hour: exerciseHour
+                };
+
+                fetch(`http://localhost:8080/addExercise?&patientID=${newExercise.PatientID}&exerciseInfo=${newExercise.ExerciseInfo}&Days=${newExercise.Day}&Hour=${newExercise.Hour}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Fortschritte erfolgreich hinzugefügt.');
+                            // Fetch existing exercises from localStorage
+                            let storedData = JSON.parse(localStorage.getItem('exercises')) || { exercises: [] };
+                            if (!Array.isArray(storedData.exercises)) {
+                                storedData.exercises = [];
+                            }
+                            // Add new exercise to the list
+                            storedData.exercises.push(newExercise);
+                            // Save back to localStorage
+                            localStorage.setItem('exercises', JSON.stringify(storedData));
+                            // Refresh the page or the list
+                                window.location.href = 'patient-home.html';
+
+                            renderAppointments();
+                        } else {
+                            alert('Fehler beim Hinzufügen der Fortschritte. Bitte versuchen Sie es erneut.');
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        alert('Fehler bei der Fortschritte. Bitte versuchen Sie es erneut.');
+                    });
+
+                return false;
+            }
+
+            function deleteExercise(exerciseID) {
+                fetch(`http://localhost:8080/deleteExercise?exerciseId=${exerciseID}`)
+                    .then(response => {
+                        if (response.ok) {
+                            // Fortschritt erfolgreich gelöscht
+                            alert('Der Fortschritt wurde erfolgreich gelöscht.');
+                            // Fetch existing exercises from localStorage
+                            let storedData = JSON.parse(localStorage.getItem('exercises')) || { exercises: [] };
+                            if (!Array.isArray(storedData.exercises)) {
+                                storedData.exercises = [];
+                            }
+                            // Filter out the deleted exercise
+                            storedData.exercises = storedData.exercises.filter(exercise => exercise.ExerciseID !== exerciseID);
+                            // Save back to localStorage
+                            localStorage.setItem('exercises', JSON.stringify(storedData));
+                            // Refresh the page or the list
+                            renderAppointments();
+                        } else {
+                            alert('Fehler beim Löschen des Fortschritts. Bitte versuchen Sie es erneut.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fehler:', error);
+                        alert('Fehler beim Löschen des Fortschritts. Bitte versuchen Sie es erneut.');
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

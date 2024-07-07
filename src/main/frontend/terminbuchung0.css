@@ -1,0 +1,78 @@
+/* Allgemeine Stile für die Hauptseite */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 100vh;
+}
+
+header {
+    width: 100%;
+    background-color: #00AEEF;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.main-container {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 40px 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    /* Abstand nach oben */
+}
+
+.instruction-text {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    /* Abstand zwischen den Buttons */
+}
+
+.large-button {
+    padding: 20px 40px;
+    font-size: 20px;
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.large-button:hover {
+    background-color: #00AEEF;
+    transform: translateY(-2px);
+}
+
+.large-button:active {
+    transform: translateY(2px);
+}
+
+footer {
+    text-align: center;
+    padding: 5px;
+    background-color: #00AEEF;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    /* Ensures the footer is pushed to the bottom */
+}

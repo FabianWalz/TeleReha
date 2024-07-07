@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleReha Physiotherapie - Kontakt</title>
+    <link rel="stylesheet" type="text/css" href="standorte.css">
+</head>
+
+<body>
+    <header>
+        <h1>Standorte</h1>
+        <a href="patient-home.html" class="menü-link">Menü</a>
+    </header>
+
+    <div class="contact-container">
+        <div class="map-container">
+            <iframe id="map" class="map"
+                src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d118951.09165111095!2d9.18292742369516!3d48.79195795595204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sPhysiotherapie%20Kuhn!5e0!3m2!1sde!2sde!4v1716222329429!5m2!1sde!2sde"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="info-container">
+            <div class="locations">
+                <h2>Standorte:</h2>
+                <select id="location-select">
+                    <option value="">Wähle einen Standort</option>
+                    <option value="location1">Königstraße 70, 70173 Stuttgart</option>
+                    <option value="location2">Schwabstr. 93, 70193 Stuttgart</option>
+                    <option value="location3">Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen</option>
+                    <option value="location4">Ludwigsburger Str. 191, 70435 Stuttgart</option>
+                    <option value="location5">Am Höhenpark 4, 70192 Stuttgart</option>
+                    <option value="location6">Marienplatz 4, 70178 Stuttgart</option>
+                    <option value="location7">Möhringer Landstraße 5, 70563 Stuttgart</option>
+                </select>
+            </div>
+            <div class="location-info-container">
+                <div id="location1" class="location-info">
+                    <h3>Königstraße 70, 70173 Stuttgart</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag - Donnerstag: 07.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 07.00 bis 16.00 Uhr</p>
+                    <p>Kontakt: 0711 2536 1400</p>
+                    <p>E-Mail: koenigstr@praxis-kuhn.de</p>
+                </div>
+                <div id="location2" class="location-info">
+                    <h3>Schwabstr. 93, 70193 Stuttgart</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag - Donnerstag: 07.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 07.00 bis 16.00 Uhr</p>
+                    <p>Kontakt: 0711 993 31 60</p>
+                    <p>E-Mail: info@praxis-kuhn.de</p>
+                </div>
+                <div id="location3" class="location-info">
+                    <h3>Ludwigsburger Str. 100, 70435 Stuttgart - Zuffenhausen</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag - Donnerstag: 07.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 07.00 bis 16.00 Uhr</p>
+                    <p>Kontakt: 0711 722 088 86</p>
+                    <p>E-Mail: zuffenhausen@praxis-kuhn.de</p>
+                </div>
+                <div id="location4" class="location-info">
+                    <h3>Ludwigsburger Str. 191, 70435 Stuttgart</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag - Donnerstag: 07.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 07.00 bis 18.00 Uhr</p>
+                    <p>Kontakt: 0711 258 578 35</p>
+                    <p>E-Mail: mail@kuhn-cakirli.de</p>
+                </div>
+                <div id="location5" class="location-info">
+                    <h3>Am Höhenpark 4, 70192 Stuttgart</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag - Donnerstag: 07.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 07.00 bis 16.00 Uhr</p>
+                    <p>Kontakt: 0711 284 476 10</p>
+                    <p>E-Mail: hoehenpark@praxis-kuhn.de</p>
+                </div>
+                <div id="location6" class="location-info">
+                    <h3>Marienplatz 4, 70178 Stuttgart</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag - Donnerstag: 08.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 08.00 bis 14.00 Uhr</p>
+                    <p>Kontakt: 0711 640 41 49</p>
+                    <p>E-Mail: marienplatz@praxis-kuhn.de</p>
+                </div>
+                <div id="location7" class="location-info">
+                    <h3>Möhringer Landstraße 5, 70563 Stuttgart</h3>
+                    <p>Öffnungszeiten:</p>
+                    <p>Montag & Mittwoch: 07.00 bis 20.00 Uhr</p>
+                    <p>Dienstag & Donnerstag: 08.00 bis 20.00 Uhr</p>
+                    <p>Freitag: 07.00 bis 13.00 Uhr</p>
+                    <p>Kontakt: 0711 99 77 77 17</p>
+                    <p>E-Mail: vaihingen@praxis-kuhn.de</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+    <script>
+        function updateMap(locationId) {
+            const locationUrls = {
+                location1: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2630.898232305378!2d9.177447215839517!3d48.7784486792828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799db7cc7f29b5b%3A0xb292d6f9f85a9f41!2sK%C3%B6nigstra%C3%9Fe%2070%2C%2070173%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde",
+                location2: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2630.708671505701!2d9.164925315839565!3d48.768677579282955!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799db4d1a2a4f07%3A0xb57d5e3ae1a08c13!2sSchwabstra%C3%9Fe%2093%2C%2070193%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde",
+                location3: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2631.7415782899927!2d9.1451231158393!3d48.83202317928208!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799dbdcb302ef77%3A0x6cdd31d0b12b6145!2sLudwigsburger%20Str.%20100%2C%2070435%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde",
+                location4: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2631.8028919399043!2d9.15127081583929!3d48.83506217928224!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799dbdd349f1d13%3A0x9f9f6ef7e1c9e912!2sLudwigsburger%20Str.%20191%2C%2070435%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde",
+                location5: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2630.179118914651!2d9.162897815839706!3d48.79297327928249!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799db843d0186bb%3A0x991a45e74b7a125b!2sAm%20H%C3%B6henpark%204%2C%2070192%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde",
+                location6: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2630.0335613042044!2d9.164530315839734!3d48.76030967928279!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799dbd0b054e8ed%3A0x98e756c1b5a9e4c1!2sMarienplatz%204%2C%2070178%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde",
+                location7: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2630.618230385078!2d9.150647015839604!3d48.728555379283074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4799db7a2ed67a8d%3A0x3a83a3f8a2af5a2d!2sM%C3%B6hringer%20Landstra%C3%9Fe%205%2C%2070563%20Stuttgart%2C%20Deutschland!5e0!3m2!1sde!2sde!4v1716221774536!5m2!1sde!2sde"
+            };
+
+            const mapSrc = locationUrls[locationId];
+            if (mapSrc) {
+                document.getElementById('map').src = mapSrc;
+                showLocationInfo(locationId);
+            }
+        }
+
+        function showLocationInfo(locationId) {
+            const locations = document.querySelectorAll('.location-info');
+            locations.forEach(location => {
+                location.classList.remove('active');
+            });
+            document.getElementById(locationId).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('location-select').addEventListener('change', function () {
+                updateMap(this.value);
+            });
+        });
+
+    </script>
+</body>
+
+</html> 

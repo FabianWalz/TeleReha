@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Startseite</title>
+    <link rel="stylesheet" type="text/css" href="patient-home.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('logout-button').addEventListener('click', function () {
+                // Entfernt den Benutzername und die UserID aus dem localStorage
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userId');
+                window.location.href = 'login.html';
+            });
+
+            // Fügt den Klick-Event für den Fortschritte-Button hinzu
+            document.getElementById('fortschritte-button').addEventListener('click', function () {
+                const patientID = localStorage.getItem('email');
+                fetch(`http://localhost:8080/listExercises?patientID=${patientID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        localStorage.setItem('exercises', JSON.stringify(data));
+
+                        // Hier können Sie die erhaltenen Daten verarbeiten
+                        console.log(data);
+                        window.location.href = 'fortschritte.html';
+                    })
+                    .catch(error => console.error('Fehler:', error));
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <header class="patient-header">
+        <h1>Willkommen bei TeleReha</h1>
+        <a href="profil.html" class="profile-link">Profil</a>
+        <button id="logout-button" class="logout-button">Ausloggen</button>
+    </header>
+
+    <div class="patient-buttons-container">
+        <div class="patient-buttons">
+            <button onclick="window.location.href='terminbuchung0.html'">Terminbuchung</button>
+            <button id="fortschritte-button">Fortschritte</button>
+            <button onclick="window.location.href='standorte.html'">Standorte</button>
+            <button onclick="window.location.href='zugang.html'">Übungen</button>
+            <button onclick="window.location.href='nachricht-patient.html'">Nachricht</button>
+            <button onclick="window.location.href='leistungen.html'">Leistungen</button>
+            <button onclick="window.location.href='team.html'">Team</button>
+        </div>
+    </div>
+
+    <img src="home.jpg" alt="Startseite" width="80%">
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+</body>
+
+</html>

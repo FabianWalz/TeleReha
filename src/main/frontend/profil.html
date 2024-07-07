@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Profil bearbeiten</title>
+    <link rel="stylesheet" type="text/css" href="profil.css">
+</head>
+
+<body>
+    <div class="profile-container">
+        <h2>Profil bearbeiten</h2>
+        <form id="profile-form">
+            <div class="form-group">
+                <label for="first_name">Vorname:</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Nachname:</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-Mail:</label>
+                <input type="email" id="email" name="email" required disabled>
+            </div>
+            <div class="form-group">
+                <label for="birthdate">Geburtsdatum:</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+            </div>
+            <div class="form-group">
+                <label>Adresse:</label>
+                <input type="text" id="street" placeholder="Straße" required>
+                <input type="text" id="house_number" placeholder="Hausnummer" required>
+                <input type="text" id="city" placeholder="Stadt" required>
+                <input type="text" id="postal_code" placeholder="Postleitzahl" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNum">Telefonnummer:</label>
+                <input type="tel" id="phoneNum" name="phoneNum" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Neues Passwort:</label>
+                <input type="password" id="password" name="password">
+            </div>
+            <div class="form-group">
+                <label for="password_repeat">Passwort wiederholen:</label>
+                <input type="password" id="password_repeat" name="password_repeat">
+            </div>
+            <button type="submit" class="large-button">Speichern</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const email = localStorage.getItem('email');
+            console.log("Stored email:", email);
+
+            if (email) {
+                fetch(`http://localhost:8080/profile?email=${encodeURIComponent(email)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Fetched user data:", data);
+                        document.getElementById('first_name').value = data.fname || '';
+                        document.getElementById('last_name').value = data.lname || '';
+                        document.getElementById('email').value = data.email || '';
+                        console.log("Received bDate:", data.bdate);
+                        if (data.bdate) {
+                            const [year, month, day] = data.bdate.split('-');
+                            document.getElementById('birthdate').value = `${year}-${month}-${day}`;
+                        }
+                        document.getElementById('street').value = data.streetAddr || '';
+                        document.getElementById('house_number').value = data.houseNumAddr || '';
+                        document.getElementById('city').value = data.cityAddr || '';
+                        document.getElementById('postal_code').value = data.postalCodeAddr || '';
+                        document.getElementById('phoneNum').value = data.phoneNum || '';
+                    })
+                    .catch(error => console.error('Error fetching profile:', error));
+            } else {
+                console.error('No email found in localStorage');
+            }
+
+            document.getElementById('profile-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const updatedUser = {
+                    fname: document.getElementById('first_name').value,
+                    lname: document.getElementById('last_name').value,
+                    streetAddr: document.getElementById('street').value,
+                    houseNumAddr: document.getElementById('house_number').value,
+                    cityAddr: document.getElementById('city').value,
+                    postalCodeAddr: document.getElementById('postal_code').value,
+                    phoneNum: document.getElementById('phoneNum').value,
+                    bdate: document.getElementById('birthdate').value,
+                    pw: document.getElementById('password').value === document.getElementById('password_repeat').value ? document.getElementById('password').value : null
+                };
+
+                if (updatedUser.pw === null) {
+                    alert("Passwörter stimmen nicht überein.");
+                    return;
+                }
+
+                fetch(`http://localhost:8080/profile?email=${encodeURIComponent(email)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedUser)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Profile updated successfully:', data);
+                        alert("Änderungen erfolgreich gespeichert.");
+                        window.location.href = "patient-home.html";
+                    })
+                    .catch(error => console.error('Error updating profile:', error));
+            });
+        });
+    </script>
+</body>
+
+</html>

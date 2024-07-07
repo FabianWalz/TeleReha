@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TeleReha Physiotherapie - Leistungen</title>
+    <link rel="stylesheet" type="text/css" href="leistungen.css">
+    <script src="functions.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Unsere Leistungen</h1>
+    </header>
+
+    <div class="container">
+        <ul>
+            <li onclick="toggleDescription('desc1')">BackCheck</li>
+            <div id="desc1" class="description">
+                <p>BackCheck ist ein umfassender Rückentest zur Überprüfung der Kraftfähigkeit und Leistungsfähigkeit
+                    der haltungsstabilisierenden Muskulatur. Es dient der Identifikation muskulärer Dysbalancen und
+                    unterstützt die Planung eines erfolgreichen Trainings.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc2')">Manuelle Therapie</li>
+            <div id="desc2" class="description">
+                <p>Manuelle Therapie ist eine spezielle Form der Physiotherapie, die sich mit der Diagnostik und
+                    Behandlung von Funktionsstörungen des Bewegungsapparates beschäftigt.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc3')">Krankengymnastik</li>
+            <div id="desc3" class="description">
+                <p>Krankengymnastik umfasst therapeutische Übungen zur Behandlung von Erkrankungen des
+                    Bewegungsapparates und zur Verbesserung der Beweglichkeit und Stärke.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc4')">Krankengymnastik am Gerät</li>
+            <div id="desc4" class="description">
+                <p>Krankengymnastik am Gerät beinhaltet spezielle Übungen, die an Geräten durchgeführt werden, um
+                    gezielt Muskelgruppen zu stärken und die Funktionalität zu verbessern.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc5')">Taping/Kinesiologie</li>
+            <div id="desc5" class="description">
+                <p>Kinesiologisches Taping unterstützt die Heilung von Verletzungen, lindert Schmerzen und fördert die
+                    Stabilität der Gelenke und Muskulatur durch elastische Klebebänder.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc6')">Wärmetherapie</li>
+            <div id="desc6" class="description">
+                <p>Wärmetherapie (Fango, Heißluft, Eis) wird zur Linderung von Schmerzen und Entzündungen sowie zur
+                    Förderung der Heilung eingesetzt.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc7')">Manuelle Lymphdrainage</li>
+            <div id="desc7" class="description">
+                <p>Die manuelle Lymphdrainage unterstützt den Abtransport von Flüssigkeitsansammlungen im Gewebe und
+                    lindert Schwellungen und Ödeme.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc8')">Massage</li>
+            <div id="desc8" class="description">
+                <p>Die klassische Massagetherapie dient der Entspannung der Muskulatur und der Förderung der
+                    Durchblutung und des allgemeinen Wohlbefindens.</p>
+            </div>
+
+            <li onclick="toggleDescription('desc9')">Sportphysiotherapie</li>
+            <div id="desc9" class="description">
+                <p>Sportphysiotherapie konzentriert sich auf die Prävention und Behandlung von Sportverletzungen sowie
+                    die Wiederherstellung der sportlichen Leistungsfähigkeit.</p>
+            </div>
+        </ul>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+    <script>
+        let currentOpenDescription = null;
+
+        function toggleDescription(id) {
+            var desc = document.getElementById(id);
+
+            if (currentOpenDescription && currentOpenDescription !== desc) {
+                currentOpenDescription.style.display = "none";
+            }
+
+            if (desc.style.display === "none" || desc.style.display === "") {
+                desc.style.display = "block";
+                currentOpenDescription = desc;
+            } else {
+                desc.style.display = "none";
+                currentOpenDescription = null;
+            }
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Code Verifizierung - TeleReha Physiotherapie</title>
+    <link rel="stylesheet" type="text/css" href="zugang.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Zugriff auf Übungen</h2>
+        <p>Für die Nutzung dieser Seite müssen Sie zunächst ein Vor-Ort-Gespräch mit einer Praxis vereinbaren. Im
+            Anschluss erhalten Sie über einen 6-stelligen Code Zugriff auf die Seite.</p>
+        <p>Gespräch bereits gehabt? Geben Sie hier den 6-stelligen Code ein:</p>
+        <div class="code-inputs">
+            <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" id="code1">
+            <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" id="code2">
+            <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" id="code3">
+            <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" id="code4">
+            <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" id="code5">
+            <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" id="code6">
+        </div>
+        <button onclick="validateCode()">Bestätigen</button>
+    </div>
+    <footer>
+        <p>&copy; 2024 TeleReha Physiotherapie. Alle Rechte vorbehalten.</p>
+    </footer>
+    <script>
+        function validateCode() {
+            const email = localStorage.getItem('email');
+            const code = [
+                document.getElementById('code1').value,
+                document.getElementById('code2').value,
+                document.getElementById('code3').value,
+                document.getElementById('code4').value,
+                document.getElementById('code5').value,
+                document.getElementById('code6').value
+            ].join('');
+
+            if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+                alert("Bitte geben Sie einen 6-stelligen Code ein.");
+                return;
+            }
+
+            console.log("Sending email: " + email + " with code: " + code); // Log added
+
+            fetch(`http://localhost:8080/verification/validate?email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Invalid code');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("Code erfolgreich verifiziert. Sie werden weitergeleitet.");
+                        window.location.href = 'uebungen.html';
+                    } else {
+                        alert("Ungültiger Code. Bitte versuchen Sie es erneut.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Fehler bei der Code-Verifizierung:", error);
+                    alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+                });
+        }
+
+        function generateCode(email) {
+            fetch(`http://localhost:8080/verification/generate?email=${encodeURIComponent(email)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Generated Code:', data.code);
+                        alert("Code erfolgreich generiert: " + data.code);
+                    } else {
+                        alert("Fehler bei der Code-Generierung: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Fehler bei der Code-Generierung:", error);
+                    alert("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+                });
+        }
+    </script>
+</body>
+
+</html>
+

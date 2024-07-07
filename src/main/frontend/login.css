@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    font-size: 16px;
+    /* Increased base font size */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.login-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    /* Increased font size */
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 18px;
+    /* Increased font size */
+}
+
+.form-group input,
+.form-group select {
+    width: calc(100% - 20px);
+    /* Adjusted width to account for padding */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    /* Increased font size */
+}
+
+.login-container button {
+    padding: 10px 20px;
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    /* Increased font size */
+}
+
+.login-container button:hover {
+    background-color: #00AEEF;
+}
+
+.links {
+    margin-top: 15px;
+}
+
+.links p {
+    margin: 5px 0;
+    font-size: 16px;
+    /* Increased font size */
+}
+
+.links a {
+    color: #00AEEF;
+    text-decoration: none;
+    font-size: 16px;
+    /* Increased font size */
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    padding: 5px;
+    background-color: #00AEEF;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    /* Ensures the footer is pushed to the bottom */
+}
